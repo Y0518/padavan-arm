@@ -1,0 +1,314 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/*
+ * ZX7981PG -- MT7981B 5G CPE (SPI-NAND)
+ *
+ * Ported from zx-openwrt-port 25.12.5
+ *   target/linux/mediatek/dts/mt7981b-ZX7981PG.dts
+ * to the padavan-arm Linux 5.15.167 kernel tree.
+ *
+ * Adaptation notes vs. the OpenWrt 6.12 source:
+ *  - includes "mt7981.dtsi"; this tree has no mt7981b.dtsi
+ *  - GPIO flags spelled out as GPIO_ACTIVE_LOW / GPIO_ACTIVE_HIGH
+ *  - WiFi calibration data read via "mediatek,mtd-eeprom" (the mt76
+ *    binding used on 5.15) instead of an nvmem "eeprom" cell
+ *  - fixed the mislabelled ubi partition node (partition@620000 -> @580000)
+ *  - no memory node: the vendor U-Boot injects /memory on this board
+ */
+
+/dts-v1/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+
+#include "mt7981.dtsi"
+
+/ {
+	model = "ZX7981PG";
+	compatible = "ZX7981PG", "mediatek,mt7981";
+
+	aliases {
+		label-mac-device = &wan;
+		serial0 = &uart0;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+	gpio-keys {
+		compatible = "gpio-keys";
+
+		button-reset {
+			label = "reset";
+			gpios = <&pio 1 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+
+		button-wps {
+			label = "wps";
+			gpios = <&pio 0 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_WPS_BUTTON>;
+		};
+
+		button-rfkill {
+			label = "rfkill";
+			gpios = <&pio 7 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RFKILL>;
+		};
+	};
+
+	gpio-leds {
+		compatible = "gpio-leds";
+
+		led-5g-blue {
+			label = "lede:blue:5gblue";
+			gpios = <&pio 12 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		led-5g-yellow {
+			label = "lede:blue:5gyellow";
+			gpios = <&pio 11 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		led-wifi {
+			label = "lede:blue:wifi";
+			gpios = <&pio 9 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		led-4g-blue {
+			label = "lede:blue:4gblue";
+			gpios = <&pio 10 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		led-4g-yellow {
+			label = "lede:blue:4gyellow";
+			gpios = <&pio 13 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		led-lan2 {
+			label = "lede:blue:lan2";
+			gpios = <&pio 4 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+
+		led-lan3 {
+			label = "lede:blue:lan3";
+			gpios = <&pio 22 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+
+		led-wan {
+			label = "lede:blue:wan";
+			gpios = <&pio 8 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+	};
+
+	gpio-export {
+		compatible = "gpio-export";
+
+		gpio-5g-power {
+			gpio-export,name = "5gpower";
+			gpio-export,output = <0>;
+			gpios = <&pio 25 GPIO_ACTIVE_LOW>;
+		};
+
+		gpio-5g-pwrkey {
+			gpio-export,name = "5gpwrkey";
+			gpio-export,output = <0>;
+			gpios = <&pio 2 GPIO_ACTIVE_LOW>;
+		};
+
+		gpio-5g-sim {
+			gpio-export,name = "5gsim";
+			gpio-export,output = <1>;
+			gpios = <&pio 15 GPIO_ACTIVE_LOW>;
+		};
+
+		gpio-fan {
+			gpio-export,name = "fan";
+			gpio-export,output = <1>;
+			gpios = <&pio 6 GPIO_ACTIVE_LOW>;
+		};
+	};
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&watchdog {
+	status = "okay";
+};
+
+&eth {
+	status = "okay";
+
+	gmac0: mac@0 {
+		compatible = "mediatek,eth-mac";
+		reg = <0>;
+		phy-mode = "2500base-x";
+
+		nvmem-cells = <&macaddr_factory_4 (-1)>;
+		nvmem-cell-names = "mac-address";
+
+		fixed-link {
+			speed = <2500>;
+			full-duplex;
+			pause;
+		};
+	};
+};
+
+&mdio_bus {
+	switch: switch@1f {
+		compatible = "mediatek,mt7531";
+		reg = <0x1f>;
+		reset-gpios = <&pio 39 GPIO_ACTIVE_HIGH>;
+		interrupt-controller;
+		#interrupt-cells = <1>;
+		interrupt-parent = <&pio>;
+		interrupts = <38 IRQ_TYPE_LEVEL_HIGH>;
+	};
+};
+
+&switch {
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@1 {
+			reg = <1>;
+			label = "lan2";
+		};
+
+		port@2 {
+			reg = <2>;
+			label = "lan3";
+		};
+
+		wan: port@3 {
+			reg = <3>;
+			label = "wan";
+		};
+
+		port@6 {
+			reg = <6>;
+			ethernet = <&gmac0>;
+			phy-mode = "2500base-x";
+
+			fixed-link {
+				speed = <2500>;
+				full-duplex;
+				pause;
+			};
+		};
+	};
+};
+
+&spi0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi0_flash_pins>;
+	status = "okay";
+
+	spi_nand: flash@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "spi-nand";
+		reg = <0>;
+		spi-max-frequency = <52000000>;
+		spi-tx-bus-width = <4>;
+		spi-rx-bus-width = <4>;
+
+		mediatek,nmbm;
+		mediatek,bmt-max-ratio = <1>;
+		mediatek,bmt-max-reserved-blocks = <64>;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "BL2";
+				reg = <0x00000 0x0100000>;
+				read-only;
+			};
+
+			partition@100000 {
+				label = "u-boot-env";
+				reg = <0x0100000 0x0080000>;
+			};
+
+			factory: partition@180000 {
+				label = "Factory";
+				reg = <0x180000 0x200000>;
+				read-only;
+
+				compatible = "nvmem-cells";
+				nvmem-layout {
+					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
+
+					eeprom_factory_0: eeprom@0 {
+						reg = <0x0 0x1000>;
+					};
+
+					macaddr_factory_4: macaddr@4 {
+						compatible = "mac-base";
+						reg = <0x4 0x6>;
+						#nvmem-cell-cells = <1>;
+					};
+				};
+			};
+
+			partition@380000 {
+				label = "FIP";
+				reg = <0x380000 0x0200000>;
+			};
+
+			partition@580000 {
+				label = "ubi";
+				reg = <0x580000 0x70A0000>;
+			};
+
+			partition@7620000 {
+				label = "wtinfo";
+				reg = <0x7620000 0x60000>;
+			};
+
+			partition@7680000 {
+				label = "nvram";
+				reg = <0x7680000 0x60000>;
+			};
+		};
+	};
+};
+
+&pio {
+	spi0_flash_pins: spi0-pins {
+		mux {
+			function = "spi";
+			groups = "spi0", "spi0_wp_hold";
+		};
+	};
+};
+
+&usb_phy {
+	status = "okay";
+};
+
+&xhci {
+	status = "okay";
+};
+
+&wifi {
+	mediatek,mtd-eeprom = <&factory 0x0>;
+	status = "okay";
+};
