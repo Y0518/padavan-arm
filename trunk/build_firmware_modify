@@ -163,7 +163,7 @@ if [ "$CONFIG_FIRMWARE_WIFI_STACK" = "mtk" ] ; then
 	cat >> "$ROOTDIR/user/shared/board.mk" <<'WIFI_STACK_EOF'
 
 # ---- WiFi stack: mtk (MTK closed source driver) ----
-CFLAGS += -DUSE_MT7915_AP -DUSE_WID_2G=7915 -DUSE_WID_5G=7915 -DBOARD_MT7915_DBDC
+CFLAGS += -DUSE_MT7915_AP -DBOARD_MT7915_DBDC
 WIFI_STACK_EOF
 	echo "NOTE: WiFi stack = mtk, user space flags appended to user/shared/board.mk"
 else
