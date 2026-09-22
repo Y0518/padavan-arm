@@ -30,3 +30,7 @@ obj-$(CONFIG_USB_NET_RNDIS_WLAN)	+= rndis_wlan.o
 obj-$(CONFIG_MAC80211_HWSIM)	+= mac80211_hwsim.o
 
 obj-$(CONFIG_VIRT_WIFI)	+= virt_wifi.o
+
+# MediaTek closed source WiFi driver (mt_wifi)
+obj-$(CONFIG_MT_AP_SUPPORT) += mt_wifi_ap/
+obj-$(CONFIG_MT_AP_SUPPORT) += wifi_utility/
