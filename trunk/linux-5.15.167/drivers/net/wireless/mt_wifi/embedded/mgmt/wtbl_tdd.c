@@ -1147,14 +1147,14 @@ UINT16 WtblTdd_AcquireUcastWcid(
 	if (i == WCID_INVALID) {
 		UINT16 srcWcid = WCID_INVALID, destWcid = WCID_INVALID;
 		MTWF_DBG(pAd, DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_INFO,
-			"Active List Entry full!\n";
+			"Active List Entry full!\n");
 		srcWcid = WtblTdd_InactiveList_FindSpace(pAd, SegIdx);
 		if (srcWcid != WCID_INVALID) {
 			/* select one from active list and move to inactive */
 			destWcid = WtblTdd_ActiveList_SelectBad(pAd);
 			if (destWcid == WCID_INVALID) {
 				MTWF_DBG(pAd, DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-						"<--- can't select one from ActiveList\n";
+						"<--- can't select one from ActiveList\n");
 				return WCID_INVALID;
 			}
 

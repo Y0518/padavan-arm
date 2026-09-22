@@ -5737,7 +5737,7 @@ VOID show_ant_diversity_debug_log(RTMP_ADAPTER *pAd, UINT8 band_idx)
 	pAd->diversity_ctl[band_idx].sta_nss,
 	pAd->diversity_ctl[band_idx].client_num,
 	pAd->diversity_ctl[band_idx].is_he_sta,
-	pAd->diversity_ctl[band_idx].sta_rssi);
+	pAd->diversity_ctl[band_idx].sta_rssi));
 }
 
 UINT8 ant_diversity_update_indicator(RTMP_ADAPTER *pAd)

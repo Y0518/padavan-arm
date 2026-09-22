@@ -2153,7 +2153,7 @@ TDLS_PeerSetupReqAction(
 
 	MTWF_DBG(pAd, DBG_CAT_CLIENT, DBG_SUBCAT_ALL, DBG_LVL_INFO,
 			 ("%s() - received a request from "MACSTR"\n",
-			  __func__, MAC2STR(PeerAddr));
+			  __func__, MAC2STR(PeerAddr)));
 
 	if ((pAd->StaCfg[0].wdev.WepStatus != Ndis802_11WEPDisabled) && (RsnLen == 0))
 		StatusCode = MLME_INVALID_SECURITY_POLICY;

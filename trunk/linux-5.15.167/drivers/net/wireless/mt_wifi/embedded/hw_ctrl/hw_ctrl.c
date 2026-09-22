@@ -2213,7 +2213,7 @@ static NTSTATUS HwCtrlWtblTddSwapIn(RTMP_ADAPTER *pAd, HwCmdQElmt *CMDQelmt)
 
 	if (pEntry->UWtblRaw.u4UWBLRaw[0] == 0x0) {
 		MTWF_DBG(pAd, DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
-				("!!ERROR wtbl zero!! %s(): pEntry=%p, pInfo->WCID=%lu\n", pEntry, pInfo->WCID);
+				("!!ERROR wtbl zero!! %s(): pEntry=%p, pInfo->WCID=%lu\n", pEntry, pInfo->WCID));
 		/* ASSERT(0); */
 	}
 

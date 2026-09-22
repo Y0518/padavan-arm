@@ -480,3 +480,4 @@ config WIFI_CSI_CN_INFO_SUPPORT
 #config GNAX_ONLY_SUPPORT
 #	bool "GNAX Only mode, 11B not allowed"
 #	default n
+source "drivers/net/wireless/mt_wifi_ap/Kconfig.pkgconfig"

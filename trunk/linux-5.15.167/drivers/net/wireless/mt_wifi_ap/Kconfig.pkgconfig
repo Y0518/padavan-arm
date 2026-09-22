@@ -1,0 +1,715 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Auto-generated from immortalwrt-mt798x-6.6 mt_wifi package.
+# Mapping rule (package Makefile): CONFIG_MTK_$c -> CONFIG_$c,
+# with $c taken from PKG_KCONFIG; defaults from config.in.
+#
+# Regenerate with the helper script if upstream changes.
+
+# ---- target chip (mutually exclusive) ----
+choice
+	prompt "MediaTek WiFi target chip"
+	default CHIP_MT7981
+	help
+	  Pick exactly one silicon target for the mt_wifi driver.
+
+config CHIP_MT7981
+	bool "MT7981"
+
+config CHIP_MT7915
+	bool "MT7915"
+
+config CHIP_MT7916
+	bool "MT7916"
+
+config CHIP_MT7986
+	bool "MT7986"
+
+config CHIP_MT7615E
+	bool "MT7615E"
+
+config CHIP_MT7622
+	bool "MT7622"
+
+config CHIP_MT7626
+	bool "MT7626"
+
+config CHIP_MT7603E
+	bool "MT7603E"
+
+config CHIP_AXE
+	bool "AXE"
+endchoice
+
+# ---- feature switches (defaults from upstream config.in) ----
+
+config AP_SUPPORT
+	bool "AP_SUPPORT"
+	default n
+
+config RT_FIRST_CARD
+	int "RT_FIRST_CARD"
+	default 7615 if FIRST_IF_MT7615E
+	default 0
+
+config RT_SECOND_CARD
+	int "RT_SECOND_CARD"
+	default 7615 if SECOND_IF_MT7615E
+	default 0
+
+config RT_FIRST_IF_RF_OFFSET
+	hex "RT_FIRST_IF_RF_OFFSET"
+	default 0xc0000
+
+config RT_SECOND_IF_RF_OFFSET
+	hex "RT_SECOND_IF_RF_OFFSET"
+	default 0xc8000
+
+config MT_WIFI
+	bool "MT_WIFI"
+	default n
+
+config WIFI_BASIC_FUNC
+	bool "WIFI_BASIC_FUNC"
+	default n
+
+config MT_WIFI_PATH
+	string "MT_WIFI_PATH"
+	default ""
+
+config FIRST_IF_NONE
+	bool "FIRST_IF_NONE"
+	default n
+
+config FIRST_IF_EEPROM_FLASH
+	bool "FIRST_IF_EEPROM_FLASH"
+	default n
+
+config FIRST_IF_EEPROM_EFUSE
+	bool "FIRST_IF_EEPROM_EFUSE"
+	default n
+
+config RT_FIRST_CARD_EEPROM
+	string "RT_FIRST_CARD_EEPROM"
+	default "flash"
+
+config SECOND_IF_NONE
+	bool "SECOND_IF_NONE"
+	default n
+
+config SECOND_IF_EEPROM_FLASH
+	bool "SECOND_IF_EEPROM_FLASH"
+	default n
+
+config SECOND_IF_EEPROM_PROM
+	bool "SECOND_IF_EEPROM_PROM"
+	default n
+
+config SECOND_IF_EEPROM_EFUSE
+	bool "SECOND_IF_EEPROM_EFUSE"
+	default n
+
+config MULTI_INF_SUPPORT
+	bool "MULTI_INF_SUPPORT"
+	default n
+
+config WIRELESS_EXT
+	bool "WIRELESS_EXT"
+	default n
+
+config WEXT_SPY
+	bool "WEXT_SPY"
+	default n
+
+config WEXT_PRIV
+	bool "WEXT_PRIV"
+	default n
+
+config DOT11_N_SUPPORT
+	bool "DOT11_N_SUPPORT"
+	default y
+
+config DOT11_VHT_AC
+	bool "DOT11_VHT_AC"
+	default y
+
+config DOT11_HE_AX
+	bool "DOT11_HE_AX"
+	default y
+
+config CFG_SUPPORT_FALCON_MURU
+	bool "CFG_SUPPORT_FALCON_MURU"
+	default y
+
+config CFG_SUPPORT_FALCON_TXCMD_DBG
+	bool "CFG_SUPPORT_FALCON_TXCMD_DBG"
+	default y
+
+config CFG_SUPPORT_FALCON_SR
+	bool "CFG_SUPPORT_FALCON_SR"
+	default y
+
+config CFG_SUPPORT_FALCON_PP
+	bool "CFG_SUPPORT_FALCON_PP"
+	default y
+
+config WIFI_DRIVER
+	bool "WIFI_DRIVER"
+	default y
+
+config G_BAND_256QAM_SUPPORT
+	bool "G_BAND_256QAM_SUPPORT"
+	default y
+
+config BRCM_256QAM_SUPPORT
+	bool "BRCM_256QAM_SUPPORT"
+	default n
+
+config ICAP_SUPPORT
+	bool "ICAP_SUPPORT"
+	default y
+
+config BACKGROUND_SCAN_SUPPORT
+	bool "BACKGROUND_SCAN_SUPPORT"
+	default y
+
+config SMART_CARRIER_SENSE_SUPPORT
+	bool "SMART_CARRIER_SENSE_SUPPORT"
+	default y
+
+config SCS_FW_OFFLOAD
+	bool "SCS_FW_OFFLOAD"
+	default n
+
+config THERMAL_PROTECT_SUPPORT
+	bool "THERMAL_PROTECT_SUPPORT"
+	default n
+
+config MT_DFS_SUPPORT
+	bool "MT_DFS_SUPPORT"
+	default y
+
+config HDR_TRANS_TX_SUPPORT
+	bool "HDR_TRANS_TX_SUPPORT"
+	default y
+
+config HDR_TRANS_RX_SUPPORT
+	bool "HDR_TRANS_RX_SUPPORT"
+	default y
+
+config DBDC_MODE
+	bool "DBDC_MODE"
+	default y
+
+config MULTI_PROFILE_SUPPORT
+	bool "MULTI_PROFILE_SUPPORT"
+	default y
+
+config DEFAULT_5G_PROFILE
+	bool "DEFAULT_5G_PROFILE"
+	default y
+
+config SUPPORT_DYNAMIC_TXOP
+	bool "SUPPORT_DYNAMIC_TXOP"
+	default n
+
+config WSC_INCLUDED
+	bool "WSC_INCLUDED"
+	default y
+
+config MT_STA_SUPPORT
+	bool "MT_STA_SUPPORT"
+	default n
+
+config WSC_V2_SUPPORT
+	bool "WSC_V2_SUPPORT"
+	default y
+
+config DOT11W_PMF_SUPPORT
+	bool "DOT11W_PMF_SUPPORT"
+	default y
+
+config PASSPOINT_R2
+	bool "PASSPOINT_R2"
+	default n
+
+config TXBF_SUPPORT
+	bool "TXBF_SUPPORT"
+	default y
+
+config IGMP_SNOOP_SUPPORT
+	bool "IGMP_SNOOP_SUPPORT"
+	default y
+
+config RATE_ADAPTION
+	bool "RATE_ADAPTION"
+	default n
+
+config RATE_ADAPT_AGBS_SUPPORT
+	bool "RATE_ADAPT_AGBS_SUPPORT"
+	default n
+
+config RTMP_FLASH_SUPPORT
+	bool "RTMP_FLASH_SUPPORT"
+	default y
+
+config ATE_SUPPORT
+	bool "ATE_SUPPORT"
+	default y
+
+config WLAN_SERVICE
+	bool "WLAN_SERVICE"
+	default n
+
+config UAPSD
+	bool "UAPSD"
+	default y
+
+config RLT_MAC
+	bool "RLT_MAC"
+	default n
+
+config RLT_BBP
+	bool "RLT_BBP"
+	default n
+
+config RLT_RF
+	bool "RLT_RF"
+	default n
+
+config RTMP_MAC
+	bool "RTMP_MAC"
+	default n
+
+config RTMP_BBP
+	bool "RTMP_BBP"
+	default n
+
+config RTMP_RF
+	bool "RTMP_RF"
+	default n
+
+config RTMP_PCI_SUPPORT
+	bool "RTMP_PCI_SUPPORT"
+	default n
+
+config RTMP_USB_SUPPORT
+	bool "RTMP_USB_SUPPORT"
+	default n
+
+config RTMP_RBUS_SUPPORT
+	bool "RTMP_RBUS_SUPPORT"
+	default n
+
+config WIFI_MODE_AP
+	bool "WIFI_MODE_AP"
+	default n
+
+config WIFI_MODE_STA
+	bool "WIFI_MODE_STA"
+	default n
+
+config APCLI_CONNECTION_TRIAL
+	bool "APCLI_CONNECTION_TRIAL"
+	default n
+
+config RALINK_RT6352
+	bool "RALINK_RT6352"
+	default n
+
+config RALINK_MT7620
+	bool "RALINK_MT7620"
+	default n
+
+config RALINK_MT7603E
+	bool "RALINK_MT7603E"
+	default n
+
+config TXOP_ARBITER
+	bool "TXOP_ARBITER"
+	default n
+
+config CFG_SUPPORT_DYNAMIC_TXOP
+	bool "CFG_SUPPORT_DYNAMIC_TXOP"
+	default n
+
+config WIFI_MODE_BOTH
+	bool "WIFI_MODE_BOTH"
+	default n
+
+config WIFI_RLT_MAC
+	bool "WIFI_RLT_MAC"
+	default n
+
+config WIFI_RTMP_MAC
+	bool "WIFI_RTMP_MAC"
+	default n
+
+config WIFI_MT_MAC
+	bool "WIFI_MT_MAC"
+	default y
+
+config MT_MAC
+	bool "MT_MAC"
+	default y
+
+config SUPPORT_OPENWRT
+	bool "SUPPORT_OPENWRT"
+	default y
+
+config SDK_USER_LIGHTY
+	bool "SDK_USER_LIGHTY"
+	default n
+
+config RA_HW_NAT
+	bool "RA_HW_NAT"
+	default n
+
+config RA_HW_NAT_WIFI_NEW_ARCH
+	bool "RA_HW_NAT_WIFI_NEW_ARCH"
+	default n
+
+config SER_SUPPORT
+	bool "SER_SUPPORT"
+	default n
+
+config TPC_SUPPORT
+	bool "TPC_SUPPORT"
+	default y
+
+config RLM_CAL_CACHE_SUPPORT
+	bool "RLM_CAL_CACHE_SUPPORT"
+	default y
+
+config CAL_BIN_FILE_SUPPORT
+	bool "CAL_BIN_FILE_SUPPORT"
+	default y
+
+config RF_LOCKDOWN_SUPPORT
+	bool "RF_LOCKDOWN_SUPPORT"
+	default n
+
+config RED_SUPPORT
+	bool "RED_SUPPORT"
+	default y
+
+config FIRST_IF_EPAELNA
+	bool "FIRST_IF_EPAELNA"
+	default n
+
+config FIRST_IF_IPAILNA
+	bool "FIRST_IF_IPAILNA"
+	default n
+
+config FIRST_IF_IPAELNA
+	bool "FIRST_IF_IPAELNA"
+	default n
+
+config FIRST_IF_EPAILNA
+	bool "FIRST_IF_EPAILNA"
+	default n
+
+config SECOND_IF_EPAELNA
+	bool "SECOND_IF_EPAELNA"
+	default n
+
+config SECOND_IF_IPAILNA
+	bool "SECOND_IF_IPAILNA"
+	default n
+
+config SECOND_IF_IPAELNA
+	bool "SECOND_IF_IPAELNA"
+	default n
+
+config SECOND_IF_EPAILNA
+	bool "SECOND_IF_EPAILNA"
+	default n
+
+config THIRD_IF_EPAELNA
+	bool "THIRD_IF_EPAELNA"
+	default n
+
+config THIRD_IF_IPAILNA
+	bool "THIRD_IF_IPAILNA"
+	default n
+
+config THIRD_IF_IPAELNA
+	bool "THIRD_IF_IPAELNA"
+	default n
+
+config THIRD_IF_EPAILNA
+	bool "THIRD_IF_EPAILNA"
+	default n
+
+config WIFI_PKT_FWD
+	bool "WIFI_PKT_FWD"
+	default n
+
+config TXD_MGMT_TXPWR_CTRL
+	bool "TXD_MGMT_TXPWR_CTRL"
+	default n
+
+config CHUTIL_SUPPORT
+	bool "CHUTIL_SUPPORT"
+	default n
+
+config NF_SUPPORT
+	bool "NF_SUPPORT"
+	default n
+
+config MBSS_DTIM_SUPPORT
+	bool "MBSS_DTIM_SUPPORT"
+	default n
+
+config HIGHPRI_RATE_SPECIFIC
+	bool "HIGHPRI_RATE_SPECIFIC"
+	default n
+
+config ZERO_LOSS_CSA_SUPPORT
+	bool "ZERO_LOSS_CSA_SUPPORT"
+	default n
+
+config IAP_VENDOR1_FEATURE_SUPPORT
+	bool "IAP_VENDOR1_FEATURE_SUPPORT"
+	default n
+
+config HOSTAPD_WPA3R3_SUPPORT
+	bool "HOSTAPD_WPA3R3_SUPPORT"
+	default n
+
+config DBDC_ONE_BAND_SUPPORT
+	bool "DBDC_ONE_BAND_SUPPORT"
+	default n
+
+config MBO_SUPPORT
+	bool "MBO_SUPPORT"
+	default n
+
+config MAP_R3_VER_SUPPORT
+	bool "MAP_R3_VER_SUPPORT"
+	default n
+
+config WIFI_PKT_FWD_V1
+	bool "WIFI_PKT_FWD_V1"
+	default n
+
+config FIRST_IF_MT7615E
+	bool "FIRST_IF_MT7615E"
+	default n
+
+config FIRST_IF_MT7622
+	bool "FIRST_IF_MT7622"
+	default n
+
+config FIRST_IF_MT7626
+	bool "FIRST_IF_MT7626"
+	default n
+
+config FIRST_IF_AXE
+	bool "FIRST_IF_AXE"
+	default n
+
+config FIRST_IF_MT7915
+	bool "FIRST_IF_MT7915"
+	default n
+
+config FIRST_IF_MT7916
+	bool "FIRST_IF_MT7916"
+	default n
+
+config FIRST_IF_MT7986
+	bool "FIRST_IF_MT7986"
+	default n
+
+config FIRST_IF_MT7981
+	bool "FIRST_IF_MT7981"
+	default n
+
+config SECOND_IF_MT7915
+	bool "SECOND_IF_MT7915"
+	default n
+
+config SECOND_IF_MT7916
+	bool "SECOND_IF_MT7916"
+	default n
+
+config SECOND_IF_MT7615E
+	bool "SECOND_IF_MT7615E"
+	default n
+
+config SECOND_IF_AXE
+	bool "SECOND_IF_AXE"
+	default n
+
+config THIRD_IF_NONE
+	bool "THIRD_IF_NONE"
+	default n
+
+config THIRD_IF_MT7615E
+	bool "THIRD_IF_MT7615E"
+	default n
+
+config THIRD_IF_MT7916
+	bool "THIRD_IF_MT7916"
+	default n
+
+config RT_THIRD_CARD
+	int "RT_THIRD_CARD"
+	default 7615 if THIRD_IF_MT7615E
+	default 0
+
+config RT_THIRD_IF_RF_OFFSET
+	hex "RT_THIRD_IF_RF_OFFSET"
+	default 0xd0000
+
+config THIRD_IF_EEPROM_FLASH
+	bool "THIRD_IF_EEPROM_FLASH"
+	default n
+
+config THIRD_IF_EEPROM_PROM
+	bool "THIRD_IF_EEPROM_PROM"
+	default n
+
+config THIRD_IF_EEPROM_EFUSE
+	bool "THIRD_IF_EEPROM_EFUSE"
+	default n
+
+config SPECTRUM_SUPPORT
+	bool "SPECTRUM_SUPPORT"
+	default y
+
+config PHY_ICS_SUPPORT
+	bool "PHY_ICS_SUPPORT"
+	default y
+
+config PRE_CAL_TRX_SET1_SUPPORT
+	bool "PRE_CAL_TRX_SET1_SUPPORT"
+	default y
+
+config LINUX_NET_TXQ_SUPPORT
+	bool "LINUX_NET_TXQ_SUPPORT"
+	default n
+
+config MEMORY_SHRINK
+	bool "MEMORY_SHRINK"
+	default n
+
+config MEMORY_SHRINK_AGGRESS
+	bool "MEMORY_SHRINK_AGGRESS"
+	default n
+
+config RPS_EFFICIENCY
+	bool "RPS_EFFICIENCY"
+	default n
+
+config WHNAT_SUPPORT
+	bool "WHNAT_SUPPORT"
+	default n
+
+config FAST_NAT_SUPPORT
+	bool "FAST_NAT_SUPPORT"
+	default n
+
+config PRE_CAL_TRX_SET2_SUPPORT
+	bool "PRE_CAL_TRX_SET2_SUPPORT"
+	default y
+
+config LINK_TEST_SUPPORT
+	bool "LINK_TEST_SUPPORT"
+	default n
+
+config TCP_RACK_SUPPORT
+	bool "TCP_RACK_SUPPORT"
+	default n
+
+config FQ_SCH_SUPPORT
+	bool "FQ_SCH_SUPPORT"
+	default y
+
+config VHT_TXBF_2G_EPIGRAM_IE_SUPPORT
+	bool "VHT_TXBF_2G_EPIGRAM_IE_SUPPORT"
+	default n
+
+config DSCP_QOS_MAP_SUPPORT
+	bool "DSCP_QOS_MAP_SUPPORT"
+	default n
+
+config MIN_PHY_RATE_SUPPORT
+	bool "MIN_PHY_RATE_SUPPORT"
+	default n
+
+config FAST_UP_RATE_SUPPORT
+	bool "FAST_UP_RATE_SUPPORT"
+	default n
+
+config VENDOR_FEATURE11_SUPPORT
+	bool "VENDOR_FEATURE11_SUPPORT"
+	default n
+
+config CTXD_MEM_CPY_SUPPORT
+	bool "CTXD_MEM_CPY_SUPPORT"
+	default n
+
+config CTXD_SCATTER_AND_GATHER_SUPPORT
+	bool "CTXD_SCATTER_AND_GATHER_SUPPORT"
+	default n
+
+config SNIFFER_RADIOTAP_SUPPORT
+	bool "SNIFFER_RADIOTAP_SUPPORT"
+	default y
+
+config WF_RESET_SUPPORT
+	bool "WF_RESET_SUPPORT"
+	default n
+
+config WIFI_SYSDVT
+	bool "WIFI_SYSDVT"
+	default n
+
+config WARP_V2
+	bool "WARP_V2"
+	default n
+
+config WTBL_TDD_SUPPORT
+	bool "WTBL_TDD_SUPPORT"
+	default n
+
+config SW_CONNECT_SUPPORT
+	bool "SW_CONNECT_SUPPORT"
+	default n
+
+config 6G_SUPPORT
+	bool "6G_SUPPORT"
+	default n
+
+config BSSMGR_CROSS_MODULE_SUPPORT
+	bool "BSSMGR_CROSS_MODULE_SUPPORT"
+	default n
+
+config WIFI_FW_BIN_LOAD
+	bool "WIFI_FW_BIN_LOAD"
+	default n
+
+config CONNINFRA_APSOC
+	bool "CONNINFRA_APSOC"
+	default n
+
+config WIFI_SKU_TYPE
+	bool "WIFI_SKU_TYPE"
+	default n
+
+config MAP_R2_6E_SUPPORT
+	bool "MAP_R2_6E_SUPPORT"
+	default n
+
+config MAP_R3_6E_SUPPORT
+	bool "MAP_R3_6E_SUPPORT"
+	default n
+
+config WIFI_SKB_USES_SLAB
+	bool "WIFI_SKB_USES_SLAB"
+	default n
+
+config 6G_AFC_SUPPORT
+	bool "6G_AFC_SUPPORT"
+	default n

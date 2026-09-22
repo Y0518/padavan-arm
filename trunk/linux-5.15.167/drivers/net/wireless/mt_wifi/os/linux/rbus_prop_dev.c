@@ -27,6 +27,16 @@
 #ifdef RTMP_RBUS_SUPPORT
 #define RTMP_MODULE_OS
 
+/* padavan: rt_config.h 被全局 -include 提前引入，rt_os_net.h 的 include guard
+ * 在 RTMP_MODULE_OS 定义之前就已锁定，导致这两个原型不可见（-Werror 下为硬错误）。
+ * 它们与 OS_ABL_FUNC_SUPPORT 无关，此处显式声明。 */
+#ifndef PADAVAN_NETDEV_PROTOS_DECLARED
+#define PADAVAN_NETDEV_PROTOS_DECLARED
+PNET_DEV RtmpPhyNetDevInit(IN VOID *pAd, IN RTMP_OS_NETDEV_OP_HOOK *pNetHook);
+BOOLEAN RtmpPhyNetDevExit(IN VOID *pAd, IN PNET_DEV net_dev);
+#endif /* PADAVAN_NETDEV_PROTOS_DECLARED */
+
+
 #include "rt_config.h"
 
 #if defined(CONFIG_RA_CLASSIFIER) && (!defined(CONFIG_RA_CLASSIFIER_MODULE))

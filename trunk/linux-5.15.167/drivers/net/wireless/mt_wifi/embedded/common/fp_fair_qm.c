@@ -164,7 +164,7 @@ static INT fp_fair_deq_req(RTMP_ADAPTER *pAd, INT cnt, struct dequeue_info *info
 		RTMP_IRQ_UNLOCK(&pAd->tx_swq_lock[deq_qid], IrqFlags);
 
 		if (deq_wcid == 0) {
-			MTWF_DBG(DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_DEBUG,
+			MTWF_DBG(pAd, DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_DEBUG,
 					 "%s():tx_swq[%d] emtpy!\n", __func__, deq_qid);
 			info->q_max_cnt[deq_qid] = 0;
 			continue;

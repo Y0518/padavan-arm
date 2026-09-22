@@ -336,8 +336,9 @@ static BOOLEAN ap_rx_peer_response_updated(struct _RTMP_ADAPTER *pAd,
 	struct legacy_rate *legacy_rate = &ie_list->cmm_ies.rate;
 #if defined(MWDS) || defined(DOT11K_RRM_SUPPORT)
 	int BssIdx = 0;
-	BSS_TABLE *ScanTab = get_scan_tab_by_wdev(pAd, wdev);
 #endif
+	/* padavan-port: ScanTab is used outside the MWDS/DOT11K guard (line ~540) */
+	BSS_TABLE *ScanTab = get_scan_tab_by_wdev(pAd, wdev);
 #ifdef OCE_SUPPORT
 	P_OCE_CTRL	pOceCtrl = &wdev->OceCtrl;
 	INT OceBOnlyPresentOldValue;

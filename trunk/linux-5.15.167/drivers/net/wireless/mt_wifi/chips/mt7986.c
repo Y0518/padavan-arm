@@ -12075,8 +12075,10 @@ void conninfra_get_emi_phy_addr(enum connsys_emi_type type, phys_addr_t *base, u
 
 static INT32 mt7986_parse_emi_phy_addr(RTMP_ADAPTER *pAd)
 {
-#ifdef CONFIG_CONNINFRA_SUPPORT
+	/* padavan: pChipCap declared unconditionally - the MTWF_DBG below
+	 * uses it outside the CONFIG_CONNINFRA_SUPPORT guard. */
 	RTMP_CHIP_CAP *pChipCap = hc_get_chip_cap(pAd->hdev_ctrl);
+#ifdef CONFIG_CONNINFRA_SUPPORT
 	phys_addr_t emi_ap_phy_base;
 	unsigned int fw_emi_size;
 

@@ -3005,3 +3005,10 @@ endif
 MODULE_FLAGS=$(EXTRA_CFLAGS)
 export MODULE_FLAGS
 obj-m+=$(SRC_EMBEDDED_DIR)/plug_in/
+
+# ---- padavan port ----
+# Several TUs (os/linux/ap_ioctl.c, sta_ioctl.c ...) have their
+#   #include "rt_config.h"
+# commented out upstream, which leaves struct wifi_dev / os_snprintf_error /
+# mtwf_dbg_prt undeclared. Force the full config header in for every TU.
+EXTRA_CFLAGS += -include $(WIFI_DRV_PATH)/mt_wifi/embedded/include/rt_config.h

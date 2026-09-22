@@ -21,7 +21,7 @@
 #ifdef FQ_SCH_SUPPORT
 static INT fq_reset_list_entry(RTMP_ADAPTER *pAd, UCHAR qidx, UINT16 wcid);
 static INT fq_add_list(RTMP_ADAPTER *pAd, UCHAR qidx, STA_TR_ENTRY *tr_entry);
-static INT fq_schedule_tx_que(RTMP_ADAPTER *pAd);
+static INT fq_schedule_tx_que(RTMP_ADAPTER *pAd, UINT8 idx);
 static INT fq_del_report_v2(RTMP_ADAPTER *pAd, struct dequeue_info *info);
 static UINT16 fq_del_list_v2(RTMP_ADAPTER *pAd, struct dequeue_info *info, CHAR deq_qid, UINT32 *tx_quota);
 
@@ -447,7 +447,7 @@ INT fq_del_report(RTMP_ADAPTER *pAd, struct dequeue_info *info)
 					if (pAd->fq_ctrl.pPrevEntry[qidx] == NULL) {
 						MTWF_DBG(pAd, DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 							("-->(%d): STA%d[%d],pRrevEntry is NULL\n",
-							__LINE__, wcid, qidx);
+							__LINE__, wcid, qidx));
 						ret = NDIS_STATUS_FAILURE;
 						goto EXIT;
 					}
@@ -633,7 +633,7 @@ INT fq_clean_list(RTMP_ADAPTER *pAd, UCHAR qidx)
 							(tr_entry->tx_queue[qidx_c].Number > 0))
 							MTWF_DBG(pAd, DBG_CAT_TX, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 								"-->(%d): STA%d[%d]  txqnum:%d ,st:%d\n",
-								___LINE__, pfq_sta->wcid, qidx_c,
+								__LINE__, pfq_sta->wcid, qidx_c,
 								tr_entry->tx_queue[qidx_c].Number,
 								pfq_sta->status[qidx_c]);
 
@@ -751,7 +751,7 @@ INT fq_update_thMax(RTMP_ADAPTER *pAd, STA_TR_ENTRY *tr_entry, UINT16 wcid,
 	return NDIS_STATUS_SUCCESS;
 }
 
-static INT fq_schedule_tx_que(RTMP_ADAPTER *pAd)
+static INT fq_schedule_tx_que(RTMP_ADAPTER *pAd, UINT8 idx)
 {
 	struct tm_ops *tm_ops = pAd->tm_qm_ops;
 	UINT i, j;

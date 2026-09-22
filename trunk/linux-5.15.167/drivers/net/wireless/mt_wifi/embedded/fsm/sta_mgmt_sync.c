@@ -988,6 +988,7 @@ static BOOLEAN sta_join_peer_response_matched(struct _RTMP_ADAPTER *pAd,
 					return FALSE;
 				}
 
+#if defined(DOT11_SAE_SUPPORT) || defined(SUPP_SAE_SUPPORT)
 				/* For WiFi 6E cert 5.2.4_6G, cannot connect to AP with WPA3PSK SAE with Hunting and Pecking. */
 				if (IS_AKM_WPA3PSK(pInBss->AKMMap) && !IS_AKM_WPA2PSK(pInBss->AKMMap) &&
 					(pInBss->sae_conn_type != SAE_CONNECTION_TYPE_H2E)) {
@@ -996,6 +997,7 @@ static BOOLEAN sta_join_peer_response_matched(struct _RTMP_ADAPTER *pAd,
 						pInBss->sae_conn_type);
 					return FALSE;
 				}
+#endif /* DOT11_SAE_SUPPORT || SUPP_SAE_SUPPORT */
 			}
 		} else {
 			MTWF_DBG(pAd, DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_ERROR,

@@ -847,7 +847,7 @@ static ssize_t procCSIDataRead(struct file *filp,
 	temp = prCSIInfo->byte_stream;
 
 	if (!temp) {
-		MTWF_DBG(pAd, (DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+		MTWF_DBG(pAd, DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
 		"temp NULL pointer!!!\n");
 		return -1;
 	}

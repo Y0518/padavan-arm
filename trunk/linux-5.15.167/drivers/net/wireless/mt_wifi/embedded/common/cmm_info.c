@@ -17761,7 +17761,7 @@ INT Set_ModuleTxpower_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
 	Value = (UINT16)os_str_tol(arg, 0, 10);
 	pAd->CommonCfg.ModuleTxpower = Value;
 	MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO, "IF Set_ModuleTxpower_Proc::(ModuleTxpower=%d)\n",
-			 pAd->CommonCfg.ModuleTxpower;
+			 pAd->CommonCfg.ModuleTxpower);
 	return TRUE;
 }
 #endif /* SINGLE_SKU */

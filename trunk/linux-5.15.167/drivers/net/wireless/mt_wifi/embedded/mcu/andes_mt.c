@@ -1359,7 +1359,7 @@ VOID ExtEventPhyIcsUnSolicitDataHandler(
 	msg_len = pIcsEvent->u4DataLen * sizeof(UINT32) + sizeof(FW_BIN_LOG_HDR_T);
 
 	if (os_alloc_mem(pAd, (UCHAR **)&buffer, msg_len) != NDIS_STATUS_SUCCESS)
-		return NDIS_STATUS_FAILURE;
+		return;
 	log_hdr = (P_FW_BIN_LOG_HDR_T)buffer;
 
 	/* prepare ICS header */
@@ -1944,7 +1944,7 @@ BOOLEAN MtUpdateBcnToMcu(
 
 	if (!wdev) {
 		MTWF_DBG(pAd, DBG_CAT_AP, CATAP_BCN, DBG_LVL_ERROR,
-				 "wdev is NULL!\n";
+				 "wdev is NULL!\n");
 #ifdef BCN_V2_SUPPORT /* add bcn v2 support , 1.5k beacon support */
 	if (UpdatePktType == PKT_V2_BCN)
 			os_free_mem(bcn_offload_v2);

@@ -3311,7 +3311,7 @@ VOID CheckRssi(RTMP_ADAPTER *pAd)
 					/* log for check Rssi Read (WBRSSI/IBRSSI) */
 					MTWF_DBG(pAd, DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO, "----------------------------------(TO 4R State)-------------------------------\n");
 					MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO, " u14RValidCnt: %d\n", pAd->u14RValidCnt));
-					MTWF_DBG(pAd, DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO, "-----------------------------------------------------------------------------\n";
+					MTWF_DBG(pAd, DBG_CAT_FW, DBG_SUBCAT_ALL, DBG_LVL_INFO, "-----------------------------------------------------------------------------\n");
 					/* ---------------- */
 				} else {
 					pAd->u1RxBlockerState = ETSI_RXBLOCKER1R;
