@@ -163,8 +163,27 @@ if [ "$CONFIG_FIRMWARE_WIFI_STACK" = "mtk" ] ; then
 	cat >> "$ROOTDIR/user/shared/board.mk" <<'WIFI_STACK_EOF'
 
 # ---- WiFi stack: mtk (MTK closed source driver) ----
-CFLAGS += -DUSE_MT7915_AP -DBOARD_MT7915_DBDC
+# 板级 board.mk 带的是 -DBOARD_MT7615_DBDC（DBDC 机型标记）。
+# 但 httpd/ralink.c 里 BOARD_MT7615_DBDC / BOARD_MT7915_DBDC 是 #if/#elif
+# 互斥关系（1280/1293 行），net_lan.c 又只用 BOARD_MT7915_DBDC，
+# 并存会让部分代码走错分支，故此处替换而非追加。
+CFLAGS += -DUSE_MT7915_AP
 WIFI_STACK_EOF
+
+# 板级 board.mk 带的是 -DBOARD_MT7615_DBDC。闭源驱动是 mt7915 系列：
+# httpd/ralink.c 里 BOARD_MT7615_DBDC 与 BOARD_MT7915_DBDC 是 #if/#elif
+# 互斥关系（1280/1293 行），net_lan.c 又只用 BOARD_MT7915_DBDC，
+# 并存会让部分代码走错分支，故替换而非追加。
+sed -i 's/-DBOARD_MT7615_DBDC/-DBOARD_MT7915_DBDC/' "$ROOTDIR/user/shared/board.mk"
+
+	# board.mk / cflags.mk 是通过 makefile include 生效的，改宏不会让 make 重编 .o，
+	# 因此必须清掉受影响的包，否则会沿用上一套 CFLAGS 的目标文件。
+	for p in www shared httpd libdisk rc ; do
+		find "$ROOTDIR/user/$p" -maxdepth 1 -name '*.o' -delete 2>/dev/null
+		rm -f "$ROOTDIR/user/$p/$p" "$ROOTDIR/user/$p/lib$p.so" 2>/dev/null
+	done
+	rm -f "$ROOTDIR/user/libdisk/test_share" 2>/dev/null
+
 	echo "NOTE: WiFi stack = mtk, user space flags appended to user/shared/board.mk"
 else
 	if grep -q "^CONFIG_MT_AP_SUPPORT=y" "$kernel_tf" ; then

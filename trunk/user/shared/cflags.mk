@@ -64,8 +64,17 @@ endif # CONFIG_DBDC_MODE
 endif # CONFIG_FIRST_IF_NONE
 
 ifeq ($(CONFIG_PRODUCT),MT7981)
+# padavan-arm: WiFi 栈开关。
+# mt76 走 nl80211，不发 iwpriv 参数，故用 7981 让 ralink.c/net_wifi.c 里
+# `USE_WID_*=7615 || =7915` 的分支全部走 #else；
+# MTK 闭源驱动是 mt7915 系列，必须点亮这些分支才能正确下发 iwpriv 参数。
+ifeq ($(findstring mtk,$(CONFIG_FIRMWARE_WIFI_STACK)),mtk)
+CFLAGS += -DUSE_WID_2G=7915
+CFLAGS += -DUSE_WID_5G=7915
+else
 CFLAGS += -DUSE_WID_2G=7981
 CFLAGS += -DUSE_WID_5G=7981
+endif
 CFLAGS += -DCONFIG_MT7981
 endif
 
