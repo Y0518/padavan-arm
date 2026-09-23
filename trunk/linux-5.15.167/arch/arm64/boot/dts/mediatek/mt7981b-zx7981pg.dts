@@ -11,7 +11,13 @@
  *  - GPIO flags spelled out as GPIO_ACTIVE_LOW / GPIO_ACTIVE_HIGH
  *  - WiFi calibration data read via "mediatek,mtd-eeprom" (the mt76
  *    binding used on 5.15) instead of an nvmem "eeprom" cell
- *  - fixed the mislabelled ubi partition node (partition@620000 -> @580000)
+ *  - partition table rewritten to the REAL layout reported by the board's
+ *    MediaTek U-Boot ("mtd list" / default env "mtdparts").  The OpenWrt
+ *    source merges woem + ubi + ubi2 into one 0x580000/0x70A0000 "ubi"
+ *    partition, which is wrong: the merged region starts at "woem", so UBI
+ *    never finds its magic, and the real "ubi2" container (where U-Boot
+ *    boots our kernel from) is not a separate MTD at all.
+ *  - chosen/bootargs is mandatory on this board, see below
  *  - no memory node: the vendor U-Boot injects /memory on this board
  */
 
@@ -33,6 +39,28 @@
 
 	chosen {
 		stdout-path = "serial0:115200n8";
+
+		/*
+		 * MUST be here.  The MediaTek U-Boot on this board boots the FIT
+		 * from UBI volume "kernel" and passes NO command line at all:
+		 * fdt_chosen() only rewrites /chosen/bootargs when the env
+		 * variable "bootargs" exists, and this U-Boot's env (the
+		 * compiled-in default, because the on-flash env has a bad CRC)
+		 * has no such variable.  Empty command line => no root device
+		 * => "Kernel panic - not syncing: VFS: Unable to mount root fs".
+		 *
+		 * ubi.mtd=ubi2 : the 56 MiB UBI container U-Boot boots from
+		 *   ("woem" selects slot B).  Without it ubi_auto_attach() would
+		 *   attach the partition named "ubi" instead, i.e. slot A, which
+		 *   still holds the stock firmware.
+		 *
+		 * No root= / ubi.block= needed: ubiblock_create_auto_rootfs()
+		 *   (drivers/mtd/ubi/block.c, gated by CONFIG_MTD_ROOTFS_ROOT_DEV=y)
+		 *   creates the ubiblock for the volume named "rootfs" - our
+		 *   rootfs volume contains a squashfs, magic "hsqs", verified on
+		 *   the device - and ubiblock_create() then sets ROOT_DEV for it.
+		 */
+		bootargs = "console=ttyS0,115200n1 loglevel=8 ubi.mtd=ubi2 rootfstype=squashfs rootwait";
 	};
 
 	gpio-keys {
@@ -274,13 +302,25 @@
 			};
 
 			partition@580000 {
+				label = "woem";
+				reg = <0x0580000 0x0A0000>;
+				read-only;
+			};
+
+			partition@620000 {
 				label = "ubi";
-				reg = <0x580000 0x70A0000>;
+				reg = <0x0620000 0x3800000>;
+			};
+
+			partition@3e20000 {
+				label = "ubi2";
+				reg = <0x3E20000 0x3800000>;
 			};
 
 			partition@7620000 {
 				label = "wtinfo";
 				reg = <0x7620000 0x60000>;
+				read-only;
 			};
 
 			partition@7680000 {

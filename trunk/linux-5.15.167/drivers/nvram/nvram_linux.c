@@ -127,7 +127,21 @@ int mt_mtd_read_nm_wifi(char *name, loff_t from, size_t len, u_char *buf)
 
 	return ret;
 }
+/*
+ * ZX7981PG: the built-in closed-source mt_wifi exports these same two names
+ * (drivers/net/wireless/wifi_utility/mt_wifi_mtd.c), and a module may not
+ * re-export a symbol the kernel already exports - modprobe then fails with
+ * "exports duplicate symbol mt_mtd_read_nm_wifi (owned by kernel)" ->
+ * "invalid module format" -> no /dev/nvram at all.
+ *
+ * The definitions above must STAY: the driver's versions throw the `name`
+ * argument away and always use "Factory", while nvram_linux needs the
+ * name-based accessor for MTD_NVRAM_NAME ("u-boot-env").  Only the export
+ * has to go, and nothing else in the tree links against these two.
+ */
+#if !defined(CONFIG_MT_AP_SUPPORT)
 EXPORT_SYMBOL(mt_mtd_read_nm_wifi);
+#endif /* !CONFIG_MT_AP_SUPPORT */
 
 int mt_mtd_write_nm_wifi(char *name, loff_t to, size_t len, const u_char *buf)
 {
@@ -195,7 +209,21 @@ int mt_mtd_write_nm_wifi(char *name, loff_t to, size_t len, const u_char *buf)
 	kfree(bak);
 	return ret;
 }
+/*
+ * ZX7981PG: the built-in closed-source mt_wifi exports these same two names
+ * (drivers/net/wireless/wifi_utility/mt_wifi_mtd.c), and a module may not
+ * re-export a symbol the kernel already exports - modprobe then fails with
+ * "exports duplicate symbol mt_mtd_read_nm_wifi (owned by kernel)" ->
+ * "invalid module format" -> no /dev/nvram at all.
+ *
+ * The definitions above must STAY: the driver's versions throw the `name`
+ * argument away and always use "Factory", while nvram_linux needs the
+ * name-based accessor for MTD_NVRAM_NAME ("u-boot-env").  Only the export
+ * has to go, and nothing else in the tree links against these two.
+ */
+#if !defined(CONFIG_MT_AP_SUPPORT)
 EXPORT_SYMBOL(mt_mtd_write_nm_wifi);
+#endif /* !CONFIG_MT_AP_SUPPORT */
 
 
 /* Globals */
