@@ -654,6 +654,28 @@ gen_ralink_config(int is_soc_ap, int is_aband, int disable_autoscan)
 	//BssidNum
 	fprintf(fp, "BssidNum=%d\n", i_ssid_num);
 
+	/* zx16: MTK driver does not auto-derive MBSS macs (ra1/rax1 would stay 00:00:00:00:00:00),
+	   so hand the guest BSS mac to the driver via "MacAddress1" (cmm_profile.c parses it).
+	   band1 base follows the driver rule: byte0 |= 0x2, byte3 = (byte3 & 0xef) | 0x10;
+	   guest mac = band base with last byte |0x01 (padavan MBSSID convention). */
+	{
+		unsigned char zx_base[ETHER_ADDR_LEN] = {0};
+		unsigned char zx_g[ETHER_ADDR_LEN];
+		int zx_k;
+
+		if (flash_mtd_read(MTD_PART_NAME_FACTORY, OFFSET_MAC_ADDR_WSOC, zx_base, ETHER_ADDR_LEN) == 0) {
+			for (zx_k = 0; zx_k < ETHER_ADDR_LEN; zx_k++)
+				zx_g[zx_k] = zx_base[zx_k];
+			if (is_aband) {
+				zx_g[0] |= 0x2;
+				zx_g[3] = (zx_g[3] & 0xef) | 0x10;
+			}
+			zx_g[5] |= 0x01;
+			fprintf(fp, "MacAddress1=%02x:%02x:%02x:%02x:%02x:%02x\n",
+				zx_g[0], zx_g[1], zx_g[2], zx_g[3], zx_g[4], zx_g[5]);
+		}
+	}
+
 	//SSID
 	fprintf(fp, "SSID%d=%s\n", 1, nvram_wlan_get(is_aband, "ssid"));
 	fprintf(fp, "SSID%d=%s\n", 2, nvram_wlan_get(is_aband, "guest_ssid"));
@@ -702,6 +724,9 @@ gen_ralink_config(int is_soc_ap, int is_aband, int disable_autoscan)
 	fprintf(fp, "BandDisabled=%d\n", 0);
 	fprintf(fp, "DfsDedicatedZeroWait=%d\n", 0);
 	fprintf(fp, "DfsZeroWaitDefault=%d\n", 0);
+//	fprintf(fp, "KernelRps=%d\n", 0); /* zx-ui */
+	fprintf(fp, "RRMEnable=%d\n", 0); /* zx-ui */
+	fprintf(fp, "MboSupport=%d\n", 0); /* zx-ui */
 
 #if defined (USE_MT7615_AP) || defined (USE_MT7915_AP)
 	fprintf(fp, "VOW_RX_En=%d\n", 1);
@@ -1290,6 +1315,21 @@ gen_ralink_config(int is_soc_ap, int is_aband, int disable_autoscan)
 	i_val = nvram_wlan_get_int(is_aband, "HT_BAWinSize");
 	if (i_val < 1 || i_val > 256) i_val = 256;
 	fprintf(fp, "HT_BAWinSize=%d\n", i_val);
+
+	//802.11KVR (zx-ui: restored from padavan, closed-driver 802.11k/v/r)
+	i_val = nvram_wlan_get_int(is_aband, "HT_80211KV");
+	fprintf(fp, "RRMEnable=%d;%d\n", i_val, i_val);
+	fprintf(fp, "WNMEnable=%d;%d\n", i_val, i_val);
+	i_val = nvram_wlan_get_int(is_aband, "HT_80211R");
+#if defined (BOARD_MT7915_DBDC)
+	fprintf(fp, "FtSupport=%d;%d\n", i_val);
+	fprintf(fp, "FtOtd=0;0\n");
+	fprintf(fp, "FtRic=1;1\n");
+#else
+	fprintf(fp, "FtSupport=%d\n", i_val);
+	fprintf(fp, "FtOtd=0\n");
+	fprintf(fp, "FtRic=1\n");
+#endif
 
 	//HT_GI
 	fprintf(fp, "HT_GI=%d;%d\n", 1, 1);
