@@ -671,8 +671,13 @@ reload_nat_modules(void)
 		snprintf(hnat_param, sizeof(hnat_param), "wan_vid=%d", get_vlan_vid_wan());
 		module_smart_load("hw_nat", hnat_param);
 #if defined (USE_MT7615_AP) || defined (USE_MT7915_AP)
-		doSystem("iwpriv %s set hw_nat_register=%d", IFNAME_2G_MAIN, 1);
-		doSystem("iwpriv %s set hw_nat_register=%d", IFNAME_5G_MAIN, 1);
+		int hw_nat_mode = nvram_get_int("hw_nat_mode"); /* zx-ui2 */
+		if (hw_nat_mode == 1)
+		{doSystem("iwpriv %s set hw_nat_register=%d", IFNAME_2G_MAIN, 1);
+		doSystem("iwpriv %s set hw_nat_register=%d", IFNAME_5G_MAIN, 1);}
+		else
+		{doSystem("iwpriv %s set hw_nat_register=%d", IFNAME_2G_MAIN, 0);
+		doSystem("iwpriv %s set hw_nat_register=%d", IFNAME_5G_MAIN, 0);}
 #endif
 	}
 
