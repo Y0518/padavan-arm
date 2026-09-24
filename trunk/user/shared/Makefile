@@ -22,3 +22,7 @@ romfs:
 
 clean:
 	rm -f *.o libshared.so
+# zx-qmodem
+ifeq ($(CONFIG_FIRMWARE_INCLUDE_QMODEM),y)
+CFLAGS += -DCONFIG_FIRMWARE_INCLUDE_QMODEM
+endif

@@ -1,0 +1,86 @@
+#!/bin/sh
+# qmodem - padavan skeleton port of QModem (https://github.com/FUjr/QModem)
+# Scan / AT / status / dial for USB cellular modems (QMI/ECM/RNDIS via quectel-CM).
+# Full feature port (SMS UI, band locking, multi-modem) is a later iteration.
+
+RUN=/tmp/run/qmodem
+
+usage() {
+	echo "usage: qmodem scan|status|dial|stop|at <cmd>"
+	echo "  scan   - detect AT port on /dev/ttyUSB* and identify the modem"
+	echo "  status - SIM / signal / registration / serving cell"
+	echo "  dial   - start quectel-CM with nvram qmodem_apn"
+	echo "  stop   - stop quectel-CM"
+	echo "  at ... - send a raw AT command on the detected port"
+}
+
+at_port() {
+	if [ -f "$RUN/at_port" ]; then cat "$RUN/at_port"; return 0; fi
+	qmodem scan >/dev/null 2>&1 && cat "$RUN/at_port" 2>/dev/null
+}
+
+at_send() {
+	# $1 = port, $2 = command
+	sms_tool_q -d "$1" at "$2" 2>/dev/null
+}
+
+case "$1" in
+scan)
+	mkdir -p "$RUN"
+	mkdir -p "$RUN"
+	# load usb modem drivers (built as modules)
+	for m in usbserial usb_wwan option qcserial cdc-acm cdc-wdm cdc_ether cdc_ncm cdc_mbim qmi_wwan rndis_host; do modprobe $m 2>/dev/null; done
+	found=""
+	for dev in /dev/ttyUSB0 /dev/ttyUSB1 /dev/ttyUSB2 /dev/ttyUSB3 /dev/ttyUSB4; do
+		[ -e "$dev" ] || continue
+		resp=$(sms_tool_q -d "$dev" at "ATI" 2>/dev/null)
+		case "$resp" in
+		*Quectel*|*SIMCOM*|*Fibocom*|*MEIGLink*|*Manufacturer*)
+			echo "$dev" > "$RUN/at_port"
+			found="$dev"
+			echo "AT port: $dev"
+			echo "$resp"
+			break
+			;;
+		esac
+	done
+	[ -n "$found" ] || { echo "no modem AT port found"; exit 1; }
+	;;
+status)
+	port=$(at_port) || exit 1
+	echo "AT port: $port"
+	for c in "AT+CPIN?" "AT+CSQ" "AT+COPS?" "AT+CGREG?" 'AT+QENG="servingcell"'; do
+		echo "--- $c"
+		at_send "$port" "$c"
+	done
+	;;
+dial)
+	apn=$(nvram get qmodem_apn 2>/dev/null)
+	[ -n "$apn" ] || apn=cmnet
+	mkdir -p "$RUN"
+	port=$(at_port) || exit 1
+	if [ -f "$RUN/cm.pid" ] && kill -0 "$(cat "$RUN/cm.pid")" 2>/dev/null; then
+		echo "quectel-CM already running (pid $(cat "$RUN/cm.pid"))"
+		exit 0
+	fi
+	echo "starting quectel-CM (apn=$apn) ..."
+	quectel-CM -s "$apn" > "$RUN/cm.log" 2>&1 &
+	echo $! > "$RUN/cm.pid"
+	echo "pid $(cat "$RUN/cm.pid"); log: $RUN/cm.log"
+	;;
+stop)
+	if [ -f "$RUN/cm.pid" ]; then
+		kill "$(cat "$RUN/cm.pid")" 2>/dev/null
+		rm -f "$RUN/cm.pid"
+		echo "stopped"
+	fi
+	;;
+at)
+	shift
+	port=$(at_port) || exit 1
+	at_send "$port" "$*"
+	;;
+*)
+	usage
+	;;
+esac

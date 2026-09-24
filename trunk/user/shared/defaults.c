@@ -766,6 +766,11 @@ struct nvram_pair router_defaults[] = {
 #endif
 #endif
 	{ "hw_nat_mode", "1" },
+#ifdef CONFIG_FIRMWARE_INCLUDE_QMODEM /* zx-qmodem */
+	{ "qmodem_enable", "1" },
+	{ "qmodem_apn", "" },
+	{ "qmodem_at_port", "" },
+#endif
 	{ "sw_nat_mode", "0" },
 #if defined(USE_SFE)
 	{ "sfe_enable", "2" },

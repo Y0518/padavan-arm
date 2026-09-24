@@ -430,6 +430,11 @@ if (found_app_mentohust()){
 	mentohust_array = new Array("","mentohust.asp","mentohust_log.asp");
 	tablink[13] = (mentohust_array);
 }
+if ('<% nvram_get_x("", "qmodem_enable"); %>' == '1'){ /* zx-qmodem */
+	qmodem_array = new Array("", "Advanced_QModem_Content.asp");
+	tabtitle[14] = new Array("", "\u8702\u7a9d\u6a21\u7ec4");
+	tablink[14] = (qmodem_array);
+}
 
 //Level 2 Menu
 menuL2_title = new Array(15)
@@ -449,6 +454,9 @@ if (found_app_shadowsocks()){
 if (found_app_mentohust()){
 	menuL2_title.push("mentohust");
 } else menuL2_title.push("");
+if ('<% nvram_get_x("", "qmodem_enable"); %>' == '1'){ /* zx-qmodem */
+	menuL2_title.push("\u8702\u7a9d\u6a21\u7ec4");
+} else menuL2_title.push("");
 
 
 menuL2_link  = new Array("", tablink[0][1], tablink[1][1], tablink[2][1], tablink[3][1], tablink[4][1], tablink[5][1], tablink[6][1], tablink[7][1], support_2g_radio() ? tablink[8][1] : "Main_EStatus_Content.asp", tablink[9][1]);
@@ -466,6 +474,9 @@ if (found_app_shadowsocks()){
 
 if (found_app_mentohust()){
 	menuL2_link.push(mentohust_array[1]);
+} else menuL2_link.push("");
+if ('<% nvram_get_x("", "qmodem_enable"); %>' == '1'){ /* zx-qmodem */
+	menuL2_link.push(qmodem_array[1]);
 } else menuL2_link.push("");
 
 //Level 1 Menu in Gateway, Router mode
