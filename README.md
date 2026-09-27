@@ -1,219 +1,135 @@
-# Padavan ARM Porting (Kernel 5.15)
+__Run on ZX7981PG (MT7981B / 256 MB RAM / 128 MiB SPI-NAND)__
 
-This is an **ARM-based** port of the Padavan firmware, specifically optimized for modern hardware and newer kernel features.
+This branch ports the Padavan ARM build to the **ZX7981PG**. It is derived from the
+upstream RAX3000M port by Lan Bing; the ZX7981PG board support (DTS, board config),
+the U-Boot/ATF bring-up and the MTK closed-source wifi stack (`mt_wifi`) are added here.
 
-## Project Overview
-- **Upstream Source**: Originally derived and ported from [hanwckf/padavan-4.4](https://github.com).
-- **Kernel Version**: `5.15.167`
-  - Forked from **OpenWrt 23.05.5** stable kernel.
-  - Integrated with **MT7981** specific patches and drivers.
-- **Architecture**: ARM (AArch64).
-
-## Supported Platforms
-The project currently supports development and deployment on:
-- [x] **QEMU** (Emulation for development)
-- [x] **RAX3000M(emmc)** (Physical hardware based on MediaTek MT7981 with emmc)
-- [x] **RAX3000M(nand)** (Physical hardware based on MediaTek MT7981 with nand)
-
-## Development Progress (Current Status)
-The project is under active development. Key milestones achieved:
-- [x] **Kernel 5.15.167** bootable on ARM/AArch64.
-- [x] **LAN Side Services**:
-  - `dnsmasq` / **DHCP** / **Samba** / **vsftpd** servers are fully functional.
-  - `httpd` web server is up and running.
-  - **WebUI (WWW)** is accessible and stable.
-- [x] **WAN Side**: (udhcpc works for Dyamic IPoE and PPPoE)
-- [x] **Wlan**: (MT7981,MT7915E, kernel driver is ready).
-- [x] **Wi-Fi Tools**: 
-  - Modern Tools `iw`, `hostapd`, `libnl-tiny`, `wireless-regdb` porting done.
-- [x] **Wi-Fi**: (In Progress).
-  - [x] `2.4Ghz` works.
-  - [x] `5Ghz` works, All bandwidth works `20Mhz` `40Mhz` `80Mhz` `160Mhz`
-  - [x] User/Psw  Settings is works.
-  - [ ] `Other Settings from WebUI is ongoing.`
-  - [ ] Wi-Fi repeater is under development.
-- [ ] DLNA is under development.
-- [x] **Features**: CAKE/QoS with TC.
-- [x] *NVRAM*: Works.
-- [x] *USB*: Works.
-- [x] *LED*: Works.
-- [x] **Web Upgrade**: Works for emmc board.
-  - Supported the sysupgrade style tar to update kerel and rootfs partitions.
-
-- [!] **Note**: Most unenabled features are currently under discovery and fixing.
-
-### Demo for WebUI
-
-![Demo-for-Screenshot](./screenshot-1.gif)
-
-
-### Deme for iperf3
-
-Lan PC with Android Mobile through 5Ghz Wifi
-```bash
-Mac-Pro:~ lanbing$ iperf3 -s -p 7799
------------------------------------------------------------
-Server listening on 7799 (test #1)
------------------------------------------------------------
-Accepted connection from 192.168.1.1, port 45698
-[  5] local 192.168.1.2 port 7799 connected to 192.168.1.1 port 45700
-[ ID] Interval           Transfer     Bitrate
-[  5]   0.00-1.00   sec  74.4 MBytes   624 Mbits/sec                  
-[  5]   1.00-2.00   sec  80.0 MBytes   671 Mbits/sec                  
-[  5]   2.00-3.00   sec  85.0 MBytes   714 Mbits/sec                  
-[  5]   3.00-4.00   sec  81.1 MBytes   681 Mbits/sec                  
-[  5]   4.00-5.00   sec  88.4 MBytes   741 Mbits/sec                  
-[  5]   5.00-6.00   sec  91.1 MBytes   762 Mbits/sec                  
-[  5]   6.00-7.00   sec   101 MBytes   852 Mbits/sec                  
-[  5]   7.00-8.00   sec   103 MBytes   865 Mbits/sec                  
-[  5]   8.00-9.00   sec  98.6 MBytes   827 Mbits/sec                  
-[  5]   9.00-10.00  sec   102 MBytes   852 Mbits/sec                  
-[  5]  10.00-10.03  sec  3.38 MBytes   833 Mbits/sec                  
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval           Transfer     Bitrate
-[  5]   0.00-10.03  sec   908 MBytes   759 Mbits/sec                  receiver
+All device specific binaries live in ZX7981PG_flash_bins folder:
 
 ```
-
-
-## Getting Started
-### Prerequisites
-
-* Based on ubuntu-20.04, and install below packages.
-* Suggest use Docker with ubuntu-20.04 base.
-
-```bash
-ln -snf /usr/share/zoneinfo/$CONTAINER_TIMEZONE /etc/localtime && echo $CONTAINER_TIMEZONE > /etc/timezone
-
-apt-get update && apt-get install -y texinfo libtool-bin gperf python3-docutils autopoint gettext
-apt-get install -y sudo time git-core subversion build-essential g++ bash make \
-        libssl-dev patch libncurses5 libncurses5-dev zlib1g-dev gawk \
-        flex gettext wget unzip xz-utils python python-distutils-extra \
-        python3 python3-distutils-extra python3-setuptools swig rsync curl \
-        libsnmp-dev liblzma-dev libpam0g-dev cpio rsync gcc-multilib bc vim \
-        cmake  bison libnfnetlink-dev libnfnetlink0 kmod libelf-dev help2man \
-        libthread-queue-any-perl python3-dev xsltproc \
-        libboost-dev  libxml-parser-perl   libusb-dev  \
-        groff automake-1.15
-
+ZX7981PG_flash_bins/
+  mt7981-zx7981pg-bl2.bin         ATF v2.7 BL2       - only for uartboot recovery, normally keep the factory one
+  mt7981-zx7981pg-fip.bin         U-Boot 2025.07 + ATF v2.7 FIP (patched, see notes)
+  zx7981pg_boot_log               captured boot log  - BL2 -> U-Boot -> kernel -> userspace
+  sysupgrade_zx7981pg_..._zx24-...bin   ready to flash firmware image
 ```
 
-### Build Instructions
+1. Flash the FIP
 
-To build the firmware for a specific target, use the following commands:
+**Only the FIP has to be flashed.** The factory BL2 already on this device is ATF v2.7,
+the same version the FIP is built against, so the new FIP boots under the untouched BL2.
+Do **not** flash the BL2 unless the device is already bricked - a bad BL2 can only be
+recovered with an SPI-NAND programmer.
 
-``` bash
-
-cd trunk
-fakeroot ./build_firmware_modify QEMU
-fakeroot ./build_firmware_modify RAX3000M
-
-```
-
-
-
-__Default Access__
-- **Default IP**: `192.168.1.1` (or your configured LAN IP)
-- **User/Psw**: `admin` / `admin`
-- **Wifi Name**: `RAX3000M_FFFF`/`RAX3000M_FFFF_5G` (DFS with 60sec CAC)
-- **Wifi Psw**: 1234567890
-
-__Run on QEMU__
-
-``` bash
-qemu-system-aarch64 -m 512 -cpu cortex-a53 -M virt-2.9  -kernel ~/workdir/Image.gz  -D qemu_a53.log -nographic -initrd ~/workdir/ramdisk -append "root=/dev/ram0" -device virtio-net-pci,netdev=net0 -netdev user,id=net0,hostfwd=tcp:127.0.0.1:8800-10.0.2.15:80
-
-Enable eth0:
-
-ip link set eth0 up
-ip addr add 10.0.2.15/24 dev eth0
-ip route add default via 10.0.2.2 dev eth0
-
-# check the virt gateway
-ping 10.0.2.2
+The easiest path is the U-Boot web failsafe (no uartboot, no BL2 risk):
 
 ```
+serial console (ttyS0, 115200n1):
+  press a key inside the 1 s "Hit any key to stop autoboot" window to enter the menu.
+  The menu is arrow-key driven - use REAL keys. A scripted "ESC [ B" is interpreted
+  as "ESC to quit" and drops you out of the menu.
 
+  *** U-Boot Boot Menu ***
+  1. Startup system (Default)      6. Upgrade bootloader only
+  2. Upgrade firmware              7. Upgrade single image
+  3. Upgrade ATF BL2               8. Load image
+  4. Upgrade ATF FIP               9. Start Web failsafe
+  5. Upgrade ATF BL31 only         a. Change boot configuration
 
-__Run on RAX3000M__
+  menu item 9:  Start Web failsafe
 
-1. Flash the fip with mtk_uartboot
-
-fip and bl2 and other binaries are picked from :
-
-https://www.right.com.cn/forum/thread-8400306-1-1.html
-
-https://downloads.immortalwrt.org/releases/23.05.0/targets/mediatek/filogic/
-
-You can find the binaries from RAX3000M_flash_bins folder.
-
-```
-./mtk_uartboot -s /dev/<uart_port> --brom-load-baudrate 115200 --bl2-load-baudrate 115200 -p mt7981-ram-ddr4-bl2.bin -a -f mt7981-cmcc_rax3000m-emmc-fip.bin
-
-```
-
-
-2. Flash the "sysupgrade_cmcc_rax3000m-emmc-ubootmod.bin" to the emmc board through uboot.
-
-
-__Partion layout with rax3000m emmc build__
-
-https://www.right.com.cn/forum/thread-8400306-1-1.html
-
-```
-MT7981> mmc part
-
-Partition Map for MMC device 0  --   Partition Type: EFI
-
-Part	Start LBA	End LBA		Name
-	Attributes
-	Type GUID
-	Partition GUID
-  1	0x00002000	0x000023ff	"u-boot-env"
-	attrs:	0x0000000000000000
-	type:	0fc63daf-8483-4772-8e79-3d69d8477de4
-		(linux)
-	guid:	493dcd1a-59c0-11ee-b4d0-b083fea0360d
-  2	0x00002400	0x000033ff	"factory"
-	attrs:	0x0000000000000000
-	type:	0fc63daf-8483-4772-8e79-3d69d8477de4
-		(linux)
-	guid:	493ddcce-59c0-11ee-b4d0-b083fea0360d
-  3	0x00003400	0x000053ff	"fip"
-	attrs:	0x0000000000000000
-	type:	0fc63daf-8483-4772-8e79-3d69d8477de4
-		(linux)
-	guid:	493de9f8-59c0-11ee-b4d0-b083fea0360d
-  4	0x00016000	0x0001ffff	"config"
-	attrs:	0x0000000000000000
-	type:	0fc63daf-8483-4772-8e79-3d69d8477de4
-		(linux)
-	guid:	493df68c-59c0-11ee-b4d0-b083fea0360d
-  5	0x00020000	0x0003ffff	"kernel"
-	attrs:	0x0000000000000000
-	type:	0fc63daf-8483-4772-8e79-3d69d8477de4
-		(linux)
-	guid:	493e030c-59c0-11ee-b4d0-b083fea0360d
-  6	0x00040000	0x0016bfff	"rootfs"
-	attrs:	0x0000000000000000
-	type:	0fc63daf-8483-4772-8e79-3d69d8477de4
-		(linux)
-	guid:	493e0f82-59c0-11ee-b4d0-b083fea0360d
+  FIP      ->  http://192.168.1.1/uboot.html    (form field: fip)
+  firmware ->  http://192.168.1.1/              (form field: firmware)
 ```
 
-__Partion layout with rax3000m nand build__
+2. Flash the sysupgrade image
+
+Through the padavan WebUI (System -> Firmware Upgrade), or through the U-Boot web
+failsafe page above. Use the WebUI for day to day upgrades: it does an **A/B upgrade
+inside the single `ubi` partition**. The handler writes the spare pair `kernel_b` /
+`rootfs_b`, atomically swaps the volume names with `ubirename` and reboots. Nothing of
+the running firmware is touched before the rename succeeds, so a failure just means
+"not flashed, the old firmware still boots".
+
+Note that upgrading through the **U-Boot** web failsafe page is not an A/B upgrade - it
+removes `kernel` / `rootfs` / `rootfs_data` and recreates them, which also wipes the
+overlay. Prefer the padavan WebUI.
+
+__Partition layout with the ZX7981PG (single 114 MiB ubi)__
+
+The layout follows the `mtdparts` of the new U-Boot - a single 114 MiB `ubi`, not the
+7 partition factory layout:
+
+```
+CONFIG_MTDPARTS_DEFAULT="nmbm0:1024k(bl2),512k(u-boot-env),2048k(factory),2048k(fip),114M(ubi)"
+```
+
+```
+[    0.859151] 5 fixed-partitions partitions found on MTD device spi0.0
+[    0.865788] Creating 5 MTD partitions on "spi0.0":
+[    0.870593] 0x000000000000-0x000000100000 : "BL2"
+[    0.876400] 0x000000100000-0x000000180000 : "u-boot-env"
+[    0.882478] 0x000000180000-0x000000380000 : "Factory"
+[    0.889643] 0x000000380000-0x000000580000 : "FIP"
+[    0.896205] 0x000000580000-0x000007780000 : "ubi"
+```
 
 ```
 > cat /proc/mtd
 dev:    size   erasesize  name
-mtd0: 08000000 00020000 "spi0.0"
-mtd1: 00100000 00020000 "BL2" 
-mtd2: 00080000 00020000 "u-boot-env"
-mtd3: 00200000 00020000 "Factory"
-mtd4: 00200000 00020000 "FIP" 
-mtd5: 07200000 00020000 "ubi"
+mtd0: 00100000 00020000 "BL2"
+mtd1: 00080000 00020000 "u-boot-env"
+mtd2: 00200000 00020000 "Factory"
+mtd3: 00200000 00020000 "FIP"
+mtd4: 07200000 00020000 "ubi"
 ```
 
+```
+[    2.761475] ubi0: attached mtd4 (name "ubi", size 114 MiB)
+[    2.787608] ubi0: good PEBs: 912, bad PEBs: 0, corrupted PEBs: 0
+[    2.809160] ubi0: available PEBs: 601, total reserved PEBs: 311, PEBs reserved for bad PEB handling: 20
+[    2.821461] block ubiblock0_1: created from ubi0:1(rootfs)
+[    2.830043] ubiblock: device ubiblock0_1 (rootfs) set to be root filesystem
+```
+
+Boot args come from `chosen/bootargs` in the DTS (this U-Boot passes no arguments of
+its own), and the root is picked by volume name, so nothing has to be passed in:
+
+```
+[    0.000000] Kernel command line: console=ttyS0,115200n1 loglevel=8 ubi.mtd=ubi rootfstype=squashfs rootwait
+```
+
+__Board notes (things that cost time to figure out)__
+
+- **The `ubi` size must be a multiple of the erase block (128 KiB).** The correct value
+  is `0x7200000` (119537664 = 912 erase blocks). `0x71F0000` is *not* divisible and the
+  kernel then prints `partition "ubi" doesn't end on an erase/write block -- force
+  read-only`, clears `MTD_WRITEABLE`, and `drivers/mtd/ubi/build.c` turns the **whole UBI
+  read-only** - every write, including the WebUI upgrade, then fails with EROFS.
+- **`rootfs_data` is created with a fixed 16 MiB** by the patched
+  `board/mediatek/common/mtd_helper.c`. The stock behaviour (size 0 + auto_resize) hands
+  the whole remainder of the UBI to `rootfs_data`, leaving 0 available erase blocks: no
+  reserve for bad block handling, and the A/B upgrade has to delete the overlay before
+  every flash. With the fix there are 601 free EB and `/etc/storage` survives.
+- **`u-boot-env` is left alone on purpose.** The partition is occupied by the padavan
+  nvram, so U-Boot reports `bad CRC, using default environment` and keeps its own env in
+  the ubi volumes `ubootenv` / `ubootenv2`. That way no nvram setting is lost. U-Boot is
+  therefore driven by its built-in default environment + the boot menu.
+- **`CONFIG_MTK_DUAL_BOOT` is disabled** in this U-Boot. The boot decision is purely name
+  based: `boot_from_ubi()` reads the volume called `kernel`, and the kernel picks its root
+  by the volume name `rootfs` (`ubiblock_create_auto_rootfs()`). That is exactly what the
+  padavan `ubirename` based A/B upgrade relies on, so the two stay compatible. The one
+  thing to keep in mind is that with dual_boot off there is **no automatic rollback** - the
+  previous firmware stays intact in `kernel_b` / `rootfs_b`, so swap the names back
+  manually if the new one does not boot.
+- **The WAN port has to be named `wan`.** MT7981 + MT7531 uses DSA, every physical port is
+  its own netdev (`lan2` / `lan3` / `wan`) and there is no `eth1`, so `IFNAME_WAN` alone is
+  not enough - see the `padavan-arm-board-port` skill notes.
+- The wifi stack is the MTK closed-source driver (`mt_wifi`, built as a module because its
+  initcalls run before the rootfs is mounted); the DTS / clock / firmware details are in the
+  `padavan-mtwifi-port` skill notes.
+- IPv6 on the LAN side needs DHCPv6-PD from the upstream. This port has the stock padavan
+  behaviour: no PD, no LAN IPv6 (the router itself still gets a global address via SLAAC).
 
 __Disabled Path__
 
@@ -221,10 +137,12 @@ __Disabled Path__
 - trunk/libc/uclib
 - trunk/linux-4.4.198
 
-__Inctroduced Path__
+__Introduced Path__
 
 - aarch64-gcc-musl
 - trunk/linux-5.15.167
 
 
-*Disclaimer: This is an experimental porting version by Lan Bing. Use at your own risk.*
+*Disclaimer: This is an experimental porting version by Lan Bing.
+The ZX7981PG board support and the MTK closed-source wifi port are experimental as well.
+Use at your own risk.*

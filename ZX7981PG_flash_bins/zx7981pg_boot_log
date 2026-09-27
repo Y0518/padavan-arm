@@ -1,0 +1,801 @@
+F0: 102B 0000
+FA: 1040 0000
+FA: 1040 0000 [0200]
+F9: 0000 0000
+V0: 0000 0000 [0001]
+00: 0000 0000
+BP: 2400 0041 [0000]
+G0: 1190 0000
+EC: 0000 0000 [1000]
+T0: 0000 024F [010F]
+Jump to BL
+
+NOTICE:  BL2: v2.7(release):0fee82c9
+NOTICE:  BL2: Built : 11:57:32, Feb  6 2026
+NOTICE:  WDT: disabled
+NOTICE:  EMI: Using DDR3 settings
+
+dump toprgu registers data: 
+1001c000 | 00000000 0000ffe0 00000000 00000000
+1001c010 | 00000fff 00000000 00f00000 00000000
+1001c020 | 00000000 00000000 00000000 00000000
+1001c030 | 003c0003 003c0003 00000000 00000000
+1001c040 | 00000000 00000000 00000000 00000000
+1001c050 | 00000000 00000000 00000000 00000000
+1001c060 | 00000000 00000000 00000000 00000000
+1001c070 | 00000000 00000000 00000000 00000000
+1001c080 | 00000000 00000000 00000000 00000000
+
+dump drm registers data: 
+1001d000 | 00000000 00000000 00000000 00000000
+1001d010 | 00000000 00000000 00000000 00000000
+1001d020 | 00000000 00000000 00000000 00000000
+1001d030 | 00a003f1 000000ff 00100000 00000000
+1001d040 | 00027e71 000200a0 00020303 000000ff
+1001d050 | 00000000 00000000 00000000 00000000
+1001d060 | 00000002 00000000 00000000 00000000
+drm: 500 = 0xc 
+[DDR Reserve] ddr reserve mode not be enabled yet
+DDR RESERVE Success 0
+[EMI] ComboMCP not ready, using default setting
+BYTE_swap:0 
+BYTE_swap:0 
+Window Sum 584, worse bit 0, min window 72
+Window Sum 600, worse bit 9, min window 72
+Window Sum 506, worse bit 6, min window 60
+Window Sum 512, worse bit 9, min window 62
+Window Sum 514, worse bit 7, min window 62
+Window Sum 526, worse bit 8, min window 64
+Window Sum 518, worse bit 1, min window 64
+Window Sum 534, worse bit 14, min window 64
+Window Sum 538, worse bit 14, min window 64
+Window Sum 542, worse bit 14, min window 64
+NOTICE:  EMI: Detected DRAM size: 256MB
+NOTICE:  EMI: complex R/W mem test passed
+NOTICE:  CPU: MT7981 (1300MHz)
+NOTICE:  SPI_NAND parses attributes from parameter page.
+NOTICE:  SPI_NAND Detected ID 0xc8
+NOTICE:  Page size 2048, Block size 131072, size 134217728
+NOTICE:  Initializing NMBM ...
+NOTICE:  Signature found at block 1023 [0x07fe0000]
+NOTICE:  First info table with writecount 0 found in block 960
+NOTICE:  Second info table with writecount 0 found in block 963
+NOTICE:  NMBM has been successfully attached in read-only mode
+NOTICE:  BL2: Booting BL31
+INFO:    Total CPU count: 2
+INFO:    MCUSYS: L2C share 256K --> 0K
+INFO:    Disable NETSYS SRAM remapping
+INFO:    Secondary bootloader is AArch64
+INFO:    GICv3 without legacy support detected.
+INFO:    ARM GICv3 driver initialized in EL3
+INFO:    Maximum SPI INTID supported: 671
+INFO:    SPMC: Changed to SPMC mode
+NOTICE:  BL31: v2.7(release):20241115-63-gabe158087-dirty
+NOTICE:  BL31: Built : 14:06:22, Sep 27 2026
+NOTICE:  Hello BL31!!!
+INFO:    BL31: Initializing runtime services
+INFO:    BL31: Preparing for EL3 exit to normal world
+INFO:    Entry point address = 0x41e00000
+INFO:    SPSR = 0x3c9
+
+
+U-Boot 2025.07 (Sep 27 2026 - 14:06:11 +0000)
+
+CPU:   MediaTek MT7981
+Model: mt7981-rfb
+       (mediatek,mt7981-rfb)
+DRAM:  256 MiB
+Core:  36 devices, 14 uclasses, devicetree: separate
+
+Initializing NMBM ...
+spi-nand: spi_nand spi_nand@0: CASN page check failed
+spi-nand: spi_nand spi_nand@0: Fallback to read ID
+spi-nand: spi_nand spi_nand@0: GigaDevice SPI NAND was found.
+spi-nand: spi_nand spi_nand@0: 128 MiB, block size: 128 KiB, page size: 2048, OOB size: 64
+Could not find a valid device for nmbm0
+Signature found at block 1023 [0x07fe0000]
+First info table with writecount 0 found in block 960
+Second info table with writecount 0 found in block 963
+NMBM has been successfully attached 
+
+Loading Environment from UBI... Volume ubootenv not found!
+
+** Unable to read env from ubi:ubootenv **
+In:    serial@11002000
+Out:   serial@11002000
+Err:   serial@11002000
+Net:   MediaTek MT7531
+
+Warning: ethernet@15100000 (eth0) using random MAC address - 56:f0:21:2e:ad:5c
+eth0: ethernet@15100000
+[?25l[2J[1;1H[1;1H[2K[2;3H*** U-Boot Boot Menu ***[0K[3;1H[2K[16;1H[2K[17;3HPress UP/DOWN to move, ENTER to select, ESC to quit[0K[18;1H[2K[4;7H[7m1. Startup system (Default)[0m[5;7H2. Upgrade firmware[6;7H3. Upgrade ATF BL2[7;7H4. Upgrade ATF FIP[8;7H5.   Upgrade ATF BL31 only[9;7H6.   Upgrade bootloader only[10;7H7. Upgrade single image[11;7H8. Load image[12;7H9. Start Web failsafe[13;7Ha. Change boot configuration[14;7H0. Exit[16;3HHit any key to stop autoboot: 4 [16;3HHit any key to stop autoboot: 3 [16;3HHit any key to stop autoboot: 2 [16;3HHit any key to stop autoboot: 1 [16;1H[2K[?25h[2J[1;1HUBI partition 'ubi' already selected
+No size specified -> Using max size (4571136)
+Read 4571136 bytes from volume kernel to 000000004c000000
+## Loading kernel (any) from FIT Image at 4c000000 ...
+   Using 'config-1' configuration
+   Trying 'kernel-1' kernel subimage
+     Description:  ARM64 OpenWrt Linux-5.15.167
+     Type:         Kernel Image
+     Compression:  lzma compressed
+     Data Start:   0x4c0000ec
+     Data Size:    4457532 Bytes = 4.3 MiB
+     Architecture: AArch64
+     OS:           Linux
+     Load Address: 0x48000000
+     Entry Point:  0x48000000
+     Hash algo:    crc32
+     Hash value:   96d490de
+     Hash algo:    sha1
+     Hash value:   3b328ab8b3c39ea4bee136ef35bc314e82e29db9
+   Verifying Hash Integrity ... crc32+ sha1+ OK
+## Loading fdt (any) from FIT Image at 4c000000 ...
+   Using 'config-1' configuration
+   Trying 'fdt-1' fdt subimage
+     Description:  ARM64 OpenWrt zx7981pg device tree blob
+     Type:         Flat Device Tree
+     Compression:  uncompressed
+     Data Start:   0x4c440660
+     Data Size:    18485 Bytes = 18.1 KiB
+     Architecture: AArch64
+     Hash algo:    crc32
+     Hash value:   d26c54c0
+     Hash algo:    sha1
+     Hash value:   dda792d36b059a2e381bc9fd126025c496cae70c
+   Verifying Hash Integrity ... crc32+ sha1+ OK
+   Booting using the fdt blob at 0x4c440660
+Working FDT set to 4c440660
+   Uncompressing Kernel Image to 48000000
+   Loading Device Tree to 000000004e7f4000, end 000000004e7fb834 ... OK
+Working FDT set to 4e7f4000
+
+Starting kernel ...
+
+[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410fd034]
+[    0.000000] Linux version 5.15.167 (root@yang-control) (aarch64-openwrt-linux-musl-gcc (OpenWrt GCC 12.3.0 r24106-10cc5fcd00) 12.3.0, GNU ld (GNU Binutils) 2.40.0) #16 SMP Sun Sep 27 13:04:20 UTC 2026
+[    0.000000] Machine model: ZX7981PG
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x0000000040000000-0x000000004fffffff]
+[    0.000000]   DMA32    empty
+[    0.000000]   Normal   empty
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000040000000-0x0000000042ffffff]
+[    0.000000]   node   0: [mem 0x0000000043000000-0x000000004302ffff]
+[    0.000000]   node   0: [mem 0x0000000043030000-0x0000000047c7ffff]
+[    0.000000]   node   0: [mem 0x0000000047c80000-0x0000000047ffffff]
+[    0.000000]   node   0: [mem 0x0000000048000000-0x000000004fffffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000040000000-0x000000004fffffff]
+[    0.000000] psci: probing for conduit method from DT.
+[    0.000000] psci: PSCIv1.1 detected in firmware.
+[    0.000000] psci: Using standard PSCI v0.2 function IDs
+[    0.000000] psci: MIGRATE_INFO_TYPE not supported.
+[    0.000000] psci: SMC Calling Convention v1.2
+[    0.000000] percpu: Embedded 18 pages/cpu s33752 r8192 d31784 u73728
+[    0.000000] pcpu-alloc: s33752 r8192 d31784 u73728 alloc=18*4096
+[    0.000000] pcpu-alloc: [0] 0 [0] 1 
+[    0.000000] Detected VIPT I-cache on CPU0
+[    0.000000] CPU features: detected: GIC system register CPU interface
+[    0.000000] CPU features: kernel page table isolation disabled by kernel configuration
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 64512
+[    0.000000] Kernel command line: console=ttyS0,115200n1 loglevel=8 ubi.mtd=ubi rootfstype=squashfs rootwait
+[    0.000000] Dentry cache hash table entries: 32768 (order: 6, 262144 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 16384 (order: 5, 131072 bytes, linear)
+[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+[    0.000000] Memory: 237868K/262144K available (9088K kernel code, 964K rwdata, 3036K rodata, 1600K init, 365K bss, 24276K reserved, 0K cma-reserved)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=2, Nodes=1
+[    0.000000] rcu: Hierarchical RCU implementation.
+[    0.000000] rcu: 	CONFIG_RCU_FANOUT set to non-default value of 32.
+[    0.000000] 	Tracing variant of Tasks RCU enabled.
+[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 25 jiffies.
+[    0.000000] NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
+[    0.000000] GICv3: GIC: Using split EOI/Deactivate mode
+[    0.000000] GICv3: 640 SPIs implemented
+[    0.000000] GICv3: 0 Extended SPIs implemented
+[    0.000000] GICv3: Distributor has no Range Selector support
+[    0.000000] Root IRQ handler: gic_handle_irq
+[    0.000000] GICv3: 16 PPIs implemented
+[    0.000000] GICv3: CPU0: found redistributor 0 region 0:0x000000000c080000
+[    0.000000] arch_timer: cp15 timer(s) running at 13.00MHz (phys).
+[    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x2ff89eacb, max_idle_ns: 440795202429 ns
+[    0.000000] sched_clock: 56 bits at 13MHz, resolution 76ns, wraps every 4398046511101ns
+[    0.000145] Calibrating delay loop (skipped), value calculated using timer frequency.. 26.00 BogoMIPS (lpj=52000)
+[    0.000155] pid_max: default: 32768 minimum: 301
+[    0.000250] Mount-cache hash table entries: 512 (order: 0, 4096 bytes, linear)
+[    0.000260] Mountpoint-cache hash table entries: 512 (order: 0, 4096 bytes, linear)
+[    0.001402] rcu: Hierarchical SRCU implementation.
+[    0.001751] smp: Bringing up secondary CPUs ...
+[    0.002108] Detected VIPT I-cache on CPU1
+[    0.002134] GICv3: CPU1: found redistributor 1 region 0:0x000000000c0a0000
+[    0.002166] CPU1: Booted secondary processor 0x0000000001 [0x410fd034]
+[    0.002244] smp: Brought up 1 node, 2 CPUs
+[    0.002259] SMP: Total of 2 processors activated.
+[    0.002264] CPU features: detected: 32-bit EL0 Support
+[    0.002269] CPU features: detected: CRC32 instructions
+[    0.008078] CPU: All CPU(s) started at EL2
+[    0.008097] alternatives: patching kernel code
+[    0.010742] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns
+[    0.010766] futex hash table entries: 512 (order: 3, 32768 bytes, linear)
+[    0.010856] pinctrl core: initialized pinctrl subsystem
+[    0.011464] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    0.011792] DMA: preallocated 128 KiB GFP_KERNEL pool for atomic allocations
+[    0.011824] DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
+[    0.011848] DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+[    0.012173] thermal_sys: Registered thermal governor 'fair_share'
+[    0.012178] thermal_sys: Registered thermal governor 'bang_bang'
+[    0.012183] thermal_sys: Registered thermal governor 'step_wise'
+[    0.012188] thermal_sys: Registered thermal governor 'user_space'
+[    0.012397] ASID allocator initialised with 65536 entries
+[    0.025872] SCSI subsystem initialized
+[    0.026044] libata version 3.00 loaded.
+[    0.026114] mc: Linux media interface: v0.10
+[    0.026133] videodev: Linux video capture interface: v2.00
+[    0.026975] Bluetooth: Core ver 2.22
+[    0.027010] NET: Registered PF_BLUETOOTH protocol family
+[    0.027015] Bluetooth: HCI device and connection manager initialized
+[    0.027023] Bluetooth: HCI socket layer initialized
+[    0.027030] Bluetooth: L2CAP socket layer initialized
+[    0.027041] Bluetooth: SCO socket layer initialized
+[    0.027215] rbus porting
+[    0.027306] rbus 18000000.wbsys: PCI host bridge to bus 0000:00
+[    0.027315] pci_bus 0000:00: root bus resource [mem 0x18000000-0x18ffffff]
+[    0.027325] pci_bus 0000:00: root bus resource [bus 00-ff]
+[    0.027333] pci_bus 0000:00: scanning bus
+[    0.027351] pci 0000:00:00.0: [14c3:7981] type 00 class 0x000280
+[    0.027365] pci 0000:00:00.0: reg 0x10: [mem 0x18000000-0x1800000f 64bit]
+[    0.027374] pci 0000:00:00.0: reg 0x18: [mem 0x00000000-0x0000000f]
+[    0.027382] pci 0000:00:00.0: reg 0x1c: [mem 0x00000000-0x0000000f]
+[    0.027391] pci 0000:00:00.0: reg 0x20: [mem 0x00000000-0x0000000f]
+[    0.027399] pci 0000:00:00.0: reg 0x24: [mem 0x00000000-0x0000000f]
+[    0.028249] pci_bus 0000:00: fixups for bus
+[    0.028257] pci_bus 0000:00: bus scan returning with max=00
+[    0.028636] clocksource: Switched to clocksource arch_sys_counter
+[    0.029137] NET: Registered PF_INET protocol family
+[    0.029229] IP idents hash table entries: 4096 (order: 3, 32768 bytes, linear)
+[    0.029536] tcp_listen_portaddr_hash hash table entries: 256 (order: 0, 4096 bytes, linear)
+[    0.029557] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.029566] TCP established hash table entries: 2048 (order: 2, 16384 bytes, linear)
+[    0.029585] TCP bind hash table entries: 2048 (order: 3, 32768 bytes, linear)
+[    0.029614] TCP: Hash tables configured (established 2048 bind 2048)
+[    0.029677] UDP hash table entries: 256 (order: 1, 8192 bytes, linear)
+[    0.029694] UDP-Lite hash table entries: 256 (order: 1, 8192 bytes, linear)
+[    0.029798] NET: Registered PF_UNIX/PF_LOCAL protocol family
+[    0.029830] PCI: CLS 0 bytes, default 64
+[    0.030893] Initialise system trusted keyrings
+[    0.031367] workingset: timestamp_bits=46 max_order=16 bucket_order=0
+[    0.033863] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.033938] jffs2: version 2.2 (NAND) (SUMMARY) (LZMA) (RTIME) (CMODE_PRIORITY) (c) 2001-2006 Red Hat, Inc.
+[    0.067764] Key type asymmetric registered
+[    0.067784] Asymmetric key parser 'x509' registered
+[    0.068956] gpio-export gpio-export: 4 gpio(s) exported
+[    0.069181] pwm-mediatek 10048000.pwm: clock: top fail: -517
+[    0.079939] Serial: 8250/16550 driver, 3 ports, IRQ sharing disabled
+[    0.080827] printk: console [ttyS0] disabled
+[    0.100971] 11002000.serial: ttyS0 at MMIO 0x11002000 (irq = 18, base_baud = 2500000) is a ST16650V2
+[    0.820538] printk: console [ttyS0] enabled
+[    0.825505] cacheinfo: Unable to detect cache hierarchy for CPU 0
+[    0.834633] loop: module loaded
+[    0.839245] spi spi0.0: setup: ignoring unsupported mode bits a00
+[    0.845655] spi-nand spi0.0: ESMT SPI NAND was found.
+[    0.850724] spi-nand spi0.0: 128 MiB, block size: 128 KiB, page size: 2048, OOB size: 64
+[    0.859151] 5 fixed-partitions partitions found on MTD device spi0.0
+[    0.865788] Creating 5 MTD partitions on "spi0.0":
+[    0.870593] 0x000000000000-0x000000100000 : "BL2"
+[    0.876400] 0x000000100000-0x000000180000 : "u-boot-env"
+[    0.882478] 0x000000180000-0x000000380000 : "Factory"
+[    0.889643] 0x000000380000-0x000000580000 : "FIP"
+[    0.896205] 0x000000580000-0x000007780000 : "ubi"
+[    0.966693] wireguard: WireGuard 1.0.0 loaded. See www.wireguard.com for information.
+[    0.974555] wireguard: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+[    0.984915] tun: Universal TUN/TAP device driver, 1.6
+[    1.123382] mtk_soc_eth 15100000.ethernet eth0: mediatek frame engine at 0xffffffc009780000, irq 82
+[    1.133053] conninfra@(mtk_conninfra_drv_init:658) Before platform_driver_register
+[    1.140796] Get Index(0-TOP_MISC_BASE) phy_addr(0x11d10000) vir_addr=(0xffffffc008f9d000) size=(0x1000)
+[    1.150224] Get Index(1-TOPRGU_BASE) phy_addr(0x1001c000) vir_addr=(0xffffffc008fa5000) size=(0x1000)
+[    1.159437] Get Index(2-GPIO_BASE) phy_addr(0x11d00000) vir_addr=(0xffffffc008fad000) size=(0x1000)
+[    1.168473] Get Index(3-IOCFG_TR_BASE) phy_addr(0x11f00000) vir_addr=(0xffffffc008fb5000) size=(0x1000)
+[    1.177855] Get Index(4-IOCFG_TL_BASE) phy_addr(0x11f10000) vir_addr=(0xffffffc008fbd000) size=(0x1000)
+[    1.187238] Get Index(5-INFRACFG_AO_BASE) phy_addr(0x10003000) vir_addr=(0xffffffc008fc5000) size=(0x1000)
+[    1.196880] Get Index(6-CONN_INFRA_CFG_BASE) phy_addr(0x18001000) vir_addr=(0xffffffc008fcd000) size=(0x1000)
+[    1.206782] Get Index(7-CONN_INFRA_SYSRAM_BASE) phy_addr(0x18050000) vir_addr=(0xffffffc008ffd000) size=(0x1000)
+[    1.216946] Get Index(8-CONN_INFRA_CLKGEN_ON_TOP_BASE) phy_addr(0x18009000) vir_addr=(0xffffffc009243000) size=(0x1000)
+[    1.227716] Get Index(9-CONN_HOST_CSR_TOP_BASE) phy_addr(0x18060000) vir_addr=(0xffffffc009245000) size=(0x1000)
+[    1.237879] Get Index(10-CONN_INFRA_BUS_CR_BASE) phy_addr(0x1800e000) vir_addr=(0xffffffc00924d000) size=(0x1000)
+[    1.248129] Get Index(11-CONN_INFRA_RGU_BASE) phy_addr(0x18000000) vir_addr=(0xffffffc009255000) size=(0x1000)
+[    1.258118] Get Index(12-CONN_WT_SLP_CTL_REG_BASE) phy_addr(0x18005000) vir_addr=(0xffffffc00925d000) size=(0x1000)
+[    1.268541] Get Index(13-INST2_CONN_WT_SLP_CTL_REG_BASE) phy_addr(0x18085000) vir_addr=(0xffffffc009265000) size=(0x1000)
+[    1.279483] Get Index(14-CONN_RF_SPI_MST_REG_BASE) phy_addr(0x18004000) vir_addr=(0xffffffc00926d000) size=(0x1000)
+[    1.289907] Get Index(15-INST2_CONN_RF_SPI_MST_REG_BASE) phy_addr(0x18084000) vir_addr=(0xffffffc009275000) size=(0x1000)
+[    1.300854] Get Index(16-CONN_SEMAPHORE_BASE) phy_addr(0x18070000) vir_addr=(0xffffffc009c70000) size=(0x10000)
+[    1.310931] Get Index(17-CONN_AFE_CTL_BASE) phy_addr(0x18003000) vir_addr=(0xffffffc00927d000) size=(0x1000)
+[    1.320752] Get Index(18-CONN_AFE_CTL_2ND_BASE) phy_addr(0x18083000) vir_addr=(0xffffffc009285000) size=(0x1000)
+[    1.330916] Get Index(19-WF_TOP_SLPPROT_ON_BASE) phy_addr(0x184c0000) vir_addr=(0xffffffc009c90000) size=(0x10000)
+[    1.341252] Get Index(20-WF_TOP_CFG_BASE) phy_addr(0x184b0000) vir_addr=(0xffffffc00928d000) size=(0x1000)
+[    1.350895] Get Index(21-WF_MCU_CONFIG_LS_BASE) phy_addr(0x184f0000) vir_addr=(0xffffffc009295000) size=(0x1000)
+[    1.361057] Get Index(22-WF_MCU_BUS_CR_BASE) phy_addr(0x18400000) vir_addr=(0xffffffc00929d000) size=(0x1000)
+[    1.370960] Get Index(23-WF_MCUSYS_INFRA_BUS_FULL_U_DEBUG_CTRL_AO_BASE) phy_addr(0x18500000) vir_addr=(0xffffffc0092a5000) size=(0x1000)
+[    1.383206] Get Index(24-WF_TOP_CFG_ON_BASE) phy_addr(0x184c0000) vir_addr=(0xffffffc009cb0000) size=(0x10000)
+[    1.393195] conninfra@(consys_plt_hw_init:162) adie_cfg_type = 1, one_adie_dbdc = 1
+[    1.400843] [emi_mng_init] gConEmiPhyBase = [0x47c80000] size = [0x100000] fw size = [0x100000] ops=[(____ptrval____)]
+[    1.411670] conninfra@(mtk_conninfra_drv_init:664) After platform_driver_register
+[    1.419740] ConnInfra Dev: init (0)
+[    1.424684] conninfra@(_consys_polling_chipid_int:306) Read CONNSYS HW IP version successfully! (0x02090000)
+[    1.434513] conninfra@(connsys_d_die_cfg:365) D-die efuse: 0x00000000
+[    1.441975] conninfra@(_connsys_a_die_cfg_7976:918) adie_idx[0], A-die CHIP ID = 0x7976, HW Version = 0x8b00
+[    1.452796] conninfra@(consys_spi_write_nolock:501) addr=0x0a00, val=0xffffffff
+[    1.461101] conninfra@(consys_spi_write_nolock:501) addr=0x04ac, val=0x0000001c
+[    1.469407] conninfra@(consys_spi_write_nolock:501) addr=0x0144, val=0x00000002
+[    1.478718] conninfra@(consys_spi_write_nolock:501) addr=0x0148, val=0x00000000
+[    1.488033] conninfra@(consys_spi_write_nolock:501) addr=0x0148, val=0x43a60000
+[    1.501375] conninfra@(connsys_a_die_efuse_read_nolock:737) efuse = [0x00000001, 0x00c40000, 0x008600b7, 0x00000000]
+[    1.512891] conninfra@(consys_spi_write_nolock:501) addr=0x0144, val=0x00000002
+[    1.522203] conninfra@(consys_spi_write_nolock:501) addr=0x0148, val=0x23a6003a
+[    1.531515] conninfra@(consys_spi_write_nolock:501) addr=0x0148, val=0x63a7003a
+[    1.544856] conninfra@(connsys_a_die_efuse_read_nolock:737) efuse = [0x00000001, 0x00c40000, 0x008600b7, 0x00000000]
+[    1.556372] conninfra@(consys_spi_write_nolock:501) addr=0x0144, val=0x00000002
+[    1.565683] conninfra@(consys_spi_write_nolock:501) addr=0x0148, val=0x23a7003a
+[    1.574995] conninfra@(consys_spi_write_nolock:501) addr=0x0148, val=0x63ac003a
+[    1.588336] conninfra@(connsys_a_die_efuse_read_nolock:737) efuse = [0x00000001, 0x00c40000, 0x008600b7, 0x00000000]
+[    1.599852] conninfra@(consys_spi_write_nolock:501) addr=0x0038, val=0x4a563b00
+[    1.608159] conninfra@(consys_spi_write_nolock:501) addr=0x065c, val=0x1d59080f
+[    1.616465] conninfra@(consys_spi_write_nolock:501) addr=0x0664, val=0x34c00fe0
+[    1.624771] conninfra@(consys_spi_write_nolock:501) addr=0x0070, val=0x88888005
+[    1.634035] conninfra@(consys_spi_write_nolock:501) addr=0x0070, val=0x00000005
+[    1.642272] conninfra@(_consys_polling_chipid_int:306) Read CONNSYS HW IP version successfully! (0x02090000)
+[    1.652086] conninfra@(_consys_hw_conninfra_wakeup:470) conninfra_wakeup refcnt=[0]->[1] wakeup!!
+[    1.660951] conninfra@(_consys_hw_conninfra_sleep:490) conninfra_sleep refcnt=[1]->[0] sleep!!
+[    1.669553] conninfra@(opfunc_power_on_internal:236) [Conninfra Pwr On] BT=[0] FM=[0] GPS=[0] WF=[0] CONNINFRA=[1]
+[    1.680040] i2c_dev: i2c /dev entries driver
+[    1.685645] mtk-wdt 1001c000.watchdog: Watchdog enabled (timeout=31 sec, nowayout=0)
+[    1.693711] device-mapper: ioctl: 4.45.0-ioctl (2021-03-22) initialised: dm-devel@redhat.com
+[    1.702314] Bluetooth: HCI UART driver ver 2.3
+[    1.706774] Bluetooth: HCI UART protocol H4 registered
+[    1.711907] Bluetooth: HCI UART protocol BCSP registered
+[    1.717313] Bluetooth: HCI UART protocol Broadcom registered
+[    1.722993] Bluetooth: HCI UART protocol QCA registered
+[    1.729576] SMCCC: SOC_ID: ID = jep106:0426:7981 Revision = 0x00000000
+[    1.738592] NET: Registered PF_INET6 protocol family
+[    1.744308] Segment Routing with IPv6
+[    1.748010] In-situ OAM (IOAM) with IPv6
+[    1.752040] NET: Registered PF_PACKET protocol family
+[    1.757136] Bridge firewalling registered
+[    1.761261] 8021q: 802.1Q VLAN Support v1.8
+[    1.765466] lib80211: common routines for IEEE802.11 drivers
+[    1.771119] lib80211_crypt: registered algorithm 'NULL'
+[    1.776336] lib80211_crypt: registered algorithm 'WEP'
+[    1.781464] lib80211_crypt: registered algorithm 'CCMP'
+[    1.786679] lib80211_crypt: registered algorithm 'TKIP'
+[    1.792030] Loading compiled-in X.509 certificates
+[    1.805033] phy phy-usb-phy@11e10000.1: type_sw - reg 0x218, index 0
+[    1.858805] mt7530-mdio mdio-bus:1f: configuring for fixed/2500base-x link mode
+[    1.867985] mt7530-mdio mdio-bus:1f: Link is Up - 2.5Gbps/Full - flow control rx/tx
+[    1.877244] mt7530-mdio mdio-bus:1f lan2 (uninitialized): PHY [mt7530-0:01] driver [MediaTek MT7531 PHY] (irq=92)
+[    1.897644] mt7530-mdio mdio-bus:1f lan3 (uninitialized): PHY [mt7530-0:02] driver [MediaTek MT7531 PHY] (irq=93)
+[    1.917823] mt7530-mdio mdio-bus:1f wan (uninitialized): PHY [mt7530-0:03] driver [MediaTek MT7531 PHY] (irq=94)
+[    1.929307] DSA: tree 0 setup
+[    1.932654] ubi0: attaching mtd4
+[    2.746760] ubi0: scanning is finished
+[    2.761475] ubi0: attached mtd4 (name "ubi", size 114 MiB)
+[    2.766987] ubi0: PEB size: 131072 bytes (128 KiB), LEB size: 126976 bytes
+[    2.773870] ubi0: min./max. I/O unit sizes: 2048/2048, sub-page size 2048
+[    2.780654] ubi0: VID header offset: 2048 (aligned 2048), data offset: 4096
+[    2.787608] ubi0: good PEBs: 912, bad PEBs: 0, corrupted PEBs: 0
+[    2.793606] ubi0: user volume: 3, internal volumes: 1, max. volumes count: 128
+[    2.800819] ubi0: max/mean erase counter: 3/1, WL threshold: 4096, image sequence number: 0
+[    2.809160] ubi0: available PEBs: 601, total reserved PEBs: 311, PEBs reserved for bad PEB handling: 20
+[    2.818551] ubi0: background thread "ubi_bgt0d" started, PID 382
+[    2.821461] block ubiblock0_1: created from ubi0:1(rootfs)
+[    2.830043] ubiblock: device ubiblock0_1 (rootfs) set to be root filesystem
+[    2.837221] clk: Disabling unused clocks
+[    2.848152] VFS: Mounted root (squashfs filesystem) readonly on device 253:0.
+[    2.856016] Freeing unused kernel memory: 1600K
+[    2.860640] Run /sbin/init as init process
+[    2.864729]   with arguments:
+[    2.867683]     /sbin/init
+[    2.870383]   with environment:
+[    2.873515]     HOME=/
+[    2.875862]     TERM=linux
+STORAGE INIT: UBI active subsystem matched.
+STORAGE INIT: Match found for vo[    3.432376] UBIFS (ubi0:2): Mounting in unauthenticated mode
+lume label [root[    3.438538] UBIFS (ubi0:2): background thread "ubifs_bgt0_2" started, PID 447
+fs_data] at /dev/ubi0_2
+[    3.493464] UBIFS (ubi0:2): recovery needed
+[    3.588656] random: crng init done
+[    3.607463] UBIFS (ubi0:2): recovery completed
+[    3.611979] UBIFS (ubi0:2): UBIFS: mounted UBI device 0, volume 2, name "rootfs_data"
+[    3.619812] UBIFS (ubi0:2): LEB size: 126976 bytes (124 KiB), min./max. I/O unit sizes: 2048 bytes/2048 bytes
+[    3.629721] UBIFS (ubi0:2): FS size: 15618048 bytes (14 MiB, 123 LEBs), max 133 LEBs, journal size 1015809 bytes (0 MiB, 6 LEBs)
+[    3.641275] UBIFS (ubi0:2): reserved for root: 737678 bytes (720 KiB)
+[    3.647708] UBIFS (ubi0:2): media format: w5/r0 (latest is w5/r0), UUID 3B79CD65-DDD8-4408-8A08-69CB96B82000, small LPT model
+STORAGE INIT: UBIFS cleanly mounted onto /mnt/rwdata.
+STORAGE MAIN: Active storage media resolved to [UBIFS]
+STORAGE MAIN: Restore from UBIFS file successful.
+wifi: dumped /dev/mtd2 -> /lib/firmware/e2p (2097152 bytes)
+/etc/storage/start_script.sh: line 33: can't create /proc/sys/net/ipv4/conf/eth2/rp_filter: nonexistent directory
+[    7.708648] block2mtd: error: cannot open device /dev/mmcblk0p4
+[   10.780656] block2mtd: error: cannot open device /dev/mmcblk0p2
+[   10.816909] mt_mtd_read_nm_wifi
+[   10.848723] ASUS NVRAM, v0.08. Available space: 131072. Offset:0x0 Integrity: OK
+flash_mtd_read: failed to open MTD partition kernel
+[   10.908039] PPP generic driver version 2.4.2
+[   10.916000] NET: Registered PF_PPPOX protocol family
+[   12.449459] conninfra@(conninfra_pwr_on:120) [conninfra_pwr_on] drv=[3]
+[   12.457037] conninfra@(_consys_polling_chipid_int:306) Read CONNSYS HW IP version successfully! (0x02090000)
+[   12.474902] conninfra@(opfunc_power_on_internal:236) [Conninfra Pwr On] BT=[0] FM=[0] GPS=[0] WF=[1] CONNINFRA=[1]
+[   12.485339] WiFi@C12L1,get_dbg_setting_by_profile() 4309: debug level setting=INDEX0_debug_level not found!!
+[   12.495176] WiFi@C12L1,get_dbg_setting_by_profile() 4332: debug option setting=INDEX0_debug_option not found!!
+[   12.509072] WiFi@C12L1,match_index_by_chipname() 566: not find chip name INDEX1
+[   12.516393] WiFi@C12L1,match_index_by_chipname() 566: not find chip name INDEX2
+[   12.523718] WiFi@C12L1,match_index_by_chipname() 566: not find chip name INDEX3
+[   12.531029] WiFi@C12L1,match_index_by_chipname() 566: not find chip name INDEX4
+[   12.538339] WiFi@C12L1,match_index_by_chipname() 566: not find chip name INDEX5
+[   12.545649] WiFi@C12L1,match_index_by_chipname() 566: not find chip name INDEX6
+[   12.552958] WiFi@C12L1,match_index_by_chipname() 566: not find chip name INDEX7
+[   12.560269] WiFi@C12L1,match_index_by_chipname() 566: not find chip name INDEX8
+[   12.567579] WiFi@C12L1,match_index_by_chipname() 566: not find chip name INDEX9
+[   12.574879] WiFi@C12L2,match_index_by_chipname() 570: Not find slot id, back to old rule.
+[   12.681381] usbcore: registered new interface driver usbfs
+[   12.686956] usbcore: registered new interface driver hub
+[   12.692352] usbcore: registered new device driver usb
+[   12.709915] usbcore: registered new interface driver usb-storage
+[   12.753308] xhci-mtk 11200000.usb: supply vbus not found, using dummy regulator
+[   12.761375] xhci-mtk 11200000.usb: xHCI Host Controller
+[   12.766687] xhci-mtk 11200000.usb: new USB bus registered, assigned bus number 1
+[   12.777146] xhci-mtk 11200000.usb: hcc params 0x01403f99 hci version 0x110 quirks 0x0000000000210010
+[   12.786327] xhci-mtk 11200000.usb: irq 87, io mem 0x11200000
+[   12.792078] xhci-mtk 11200000.usb: xHCI Host Controller
+[   12.797307] xhci-mtk 11200000.usb: new USB bus registered, assigned bus number 2
+[   12.804708] xhci-mtk 11200000.usb: Host supports USB 3.2 Enhanced SuperSpeed
+[   12.812206] hub 1-0:1.0: USB hub found
+[   12.816127] hub 1-0:1.0: 1 port detected
+[   12.820558] usb usb2: We don't know the algorithms for LPM for this host, disabling LPM.
+[   12.829143] hub 2-0:1.0: USB hub found
+[   12.832971] hub 2-0:1.0: 1 port detected
+Password for 'admin' changed
+[   13.588221] mtk_soc_eth 15100000.ethernet eth0: configuring for fixed/2500base-x link mode
+[   13.596733] mtk_soc_eth 15100000.ethernet eth0: Link is Up - 2.5Gbps/Full - flow control rx/tx
+[   13.597351] mt7530-mdio mdio-bus:1f lan2: configuring for phy/gmii link mode
+[   13.613744] mt7530-mdio mdio-bus:1f lan3: configuring for phy/gmii link mode
+[   13.619557] mt7530-mdio mdio-bus:1f lan2: Link is Up - 100Mbps/Full - flow control rx/tx
+[   13.630407] br0: port 1(lan2) entered blocking state
+[   13.635423] br0: port 1(lan2) entered disabled state
+[   13.641788] device lan2 entered promiscuous mode
+[   13.646423] device eth0 entered promiscuous mode
+[   13.653821] br0: port 2(lan3) entered blocking state
+[   13.658812] br0: port 2(lan3) entered disabled state
+[   13.665471] device lan3 entered promiscuous mode
+rax0      no private ioctls.
+
+rax0      no private ioctls.
+
++ echo hostapd.sh:  start_wl
+hostapd.sh:  start_wl
++ bash /usr/bin/hostapd_genconf.sh
++ func_start_wl
++ start-stop-daemon -S -m -p /var/run/hostapd.wlan1.pid -x /usr/sbin/hostapd -- -t /var/run/hostapd/hostapd-wlan1.conf
+[   13.808899] WiFi@C01L2,RTMP_COM_IoctlHandle() 1510: -> CMD_RTPRIV_IOCTL_VIRTUAL_INF_INIT
+[   13.858496] WiFi@C12L1,RTMPWirelessModeCfg() 611: Init: BSS0 PhyMode=78
+[   13.865129] WiFi@C12L1,RTMPWirelessModeCfg() 611: Init: BSS1 PhyMode=78
+[   13.871744] WiFi@C12L1,RTMPWirelessModeCfg() 611: Init: BSS2 PhyMode=177
+[   13.878444] WiFi@C12L1,RTMPWirelessModeCfg() 611: Init: BSS3 PhyMode=177
+[   13.885281] WiFi@C23L3,auto_ch_select_set_cfg() 3456: BandIdx0, AutoChannelAtBootup=1, AutoChannelAlg = 3
+[   13.894839] WiFi@C23L3,auto_ch_select_set_cfg() 3456: BandIdx1, AutoChannelAtBootup=1, AutoChannelAlg = 3
+[   13.927847] WiFi@C12L1,rtmp_read_ap_client_from_file() 1638: APCLI[0] ApCliMuMimoDlEnable = 0
+[   13.936368] WiFi@C12L1,rtmp_read_ap_client_from_file() 1638: APCLI[1] ApCliMuMimoDlEnable = 0
+[   13.944967] WiFi@C12L1,rtmp_read_ap_client_from_file() 1657: APCLI[0] ApCliMuMimoUlEnable = 0
+[   13.953484] WiFi@C12L1,rtmp_read_ap_client_from_file() 1657: APCLI[1] ApCliMuMimoUlEnable = 0
+[   14.103437] WiFi@C02L1,is_cal_free_ic() 830: [32m[a-die version:1][m
+[   16.384773] WiFi@C17L1,RTMPReadTxPwrPerRate() 450: (450): Don't Support this now!
+[   16.392318] WiFi@C01L1,AntCfgInit() 3118: Not support for HIF_MT yet!
+[   16.418028] WiFi@C17L1,tx_pwr_comp_init() 641: NotSupportYet!
+[   16.423833] WiFi@C12L1,SCS_init() 879: INIT SCSEnable [0]= 1
+[   16.429511] WiFi@C12L1,SCS_init() 886: INIT SCSEnable [1]= 0
+[   16.435285] WiFi@C03L1,MtCmdSetMacTxRx() 10245: (ret = 0)
+[   16.440794] WiFi@C03L1,MtCmdSetMacTxRx() 10245: (ret = 0)
+[   16.446255] WiFi@C14L1,IPMacTable_init() 348: IPMacTable already inited!
+[   16.453222] WiFi@C03L1,MtCmdSetMacTxRx() 10245: (ret = 0)
+[   16.458729] WiFi@C03L1,MtCmdSetMacTxRx() 10245: (ret = 0)
+[   16.464178] WiFi@C00L1,set_ack_timeout_mode_byband() 13356: CTS/ACK Timeout Range should between [0xFFFF:0]!!
+[   16.474094] WiFi@C00L1,set_datcfg_ack_cts_timeout() 13443: DAT config band(0) cck_timeout Fail!
+[   16.482787] WiFi@C00L1,set_ack_timeout_mode_byband() 13356: CTS/ACK Timeout Range should between [0xFFFF:0]!!
+[   16.492690] WiFi@C00L1,set_datcfg_ack_cts_timeout() 13454: DAT config band(0) ofdm_timeout Fail!
+[   16.501467] WiFi@C00L1,set_ack_timeout_mode_byband() 13356: CTS/ACK Timeout Range should between [0xFFFF:0]!!
+[   16.511370] WiFi@C00L1,set_datcfg_ack_cts_timeout() 13465: DAT config band(0) ofdma_timeout Fail!
+[   16.520233] WiFi@C00L1,set_ack_timeout_mode_byband() 13356: CTS/ACK Timeout Range should between [0xFFFF:0]!!
+[   16.530135] WiFi@C00L1,set_datcfg_ack_cts_timeout() 13443: DAT config band(1) cck_timeout Fail!
+[   16.538825] WiFi@C00L1,set_ack_timeout_mode_byband() 13356: CTS/ACK Timeout Range should between [0xFFFF:0]!!
+[   16.548729] WiFi@C00L1,set_datcfg_ack_cts_timeout() 13454: DAT config band(1) ofdm_timeout Fail!
+[   16.557506] WiFi@C00L1,set_ack_timeout_mode_byband() 13356: CTS/ACK Timeout Range should between [0xFFFF:0]!!
+[   16.567409] WiFi@C00L1,set_datcfg_ack_cts_timeout() 13465: DAT config band(1) ofdma_timeout Fail!
+[   16.578708] WiFi@C00L2,dump_ht_cap() 29: Caller: dump_ht_cap+0x14/0x2c [mt_wifi]
+[   16.589356] WiFi@C00L2,dump_ht_cap() 29: Caller: dump_ht_cap+0x14/0x2c [mt_wifi]
+[   16.606658] WiFi@C00L2,red_tail_drop_init() 82: red_tail_drop_init: available token:10496, whnat_en:0
+[   16.615910] WiFi@C00L1,MtCmdCr4RedSet() 913: MtCmdCr4RedSet: (ret = 0)
+[   16.622458] WiFi@C00L1,SendRedCmd() 1048: SendRedCmd:(ret = 1)
+[   16.628411] WiFi@C01L2,RTMP_COM_IoctlHandle() 1487:  -> CMD_RTPRIV_IOCTL_VIRTUAL_INF_UP
+[   16.636421] WiFi@C01L3,wifi_sys_open() 855: wdev idx = 0
+[   16.641962] WiFi@C18L3,BuildChannelList() 484: 
+[   16.646519] WiFi@C00L3,BuildChannelList() 512: BandIdx = 0, PhyMode = 78, ChListNum = 13:
+[   16.654698] WiFi@C14L1,vht80_channel_group() 1570: invalid ch_band 0
+[   16.661046] WiFi@C14L1,vht160_channel_group() 1639: invalid ch_band 0
+[   16.667481] WiFi@C14L1,vht80_channel_group() 1570: invalid ch_band 0
+[   16.673828] WiFi@C14L1,vht160_channel_group() 1639: invalid ch_band 0
+[   16.680263] WiFi@C14L1,vht80_channel_group() 1570: invalid ch_band 0
+[   16.686610] WiFi@C14L1,vht160_channel_group() 1639: invalid ch_band 0
+[   16.693044] WiFi@C14L1,vht80_channel_group() 1570: invalid ch_band 0
+[   16.699390] WiFi@C14L1,vht160_channel_group() 1639: invalid ch_band 0
+[   16.705825] WiFi@C14L1,vht80_channel_group() 1570: invalid ch_band 0
+[   16.712171] WiFi@C14L1,vht160_channel_group() 1639: invalid ch_band 0
+[   16.718606] WiFi@C14L1,vht80_channel_group() 1570: invalid ch_band 0
+[   16.724953] WiFi@C14L1,vht160_channel_group() 1639: invalid ch_band 0
+[   16.731388] WiFi@C14L1,vht80_channel_group() 1570: invalid ch_band 0
+[   16.737734] WiFi@C14L1,vht160_channel_group() 1639: invalid ch_band 0
+[   16.744170] WiFi@C14L1,vht80_channel_group() 1570: invalid ch_band 0
+[   16.750516] WiFi@C14L1,vht160_channel_group() 1639: invalid ch_band 0
+[   16.756950] WiFi@C14L1,vht80_channel_group() 1570: invalid ch_band 0
+[   16.763297] WiFi@C14L1,vht160_channel_group() 1639: invalid ch_band 0
+[   16.769732] WiFi@C14L1,vht80_channel_group() 1570: invalid ch_band 0
+[   16.776078] WiFi@C14L1,vht160_channel_group() 1639: invalid ch_band 0
+[   16.782513] WiFi@C14L1,vht80_channel_group() 1570: invalid ch_band 0
+[   16.788859] WiFi@C14L1,vht160_channel_group() 1639: invalid ch_band 0
+[   16.795294] WiFi@C14L1,vht80_channel_group() 1570: invalid ch_band 0
+[   16.801640] WiFi@C14L1,vht160_channel_group() 1639: invalid ch_band 0
+[   16.808074] WiFi@C14L1,vht80_channel_group() 1570: invalid ch_band 0
+[   16.814420] WiFi@C14L1,vht160_channel_group() 1639: invalid ch_band 0
+[   16.820855] WiFi@C23L1,DfsBuildChannelList() 3663: [RDM]: wdev is not 5G.
+[   16.827656] WiFi@C23L3,RadarStateCheck() 243: Zero Wait State: 0
+[   16.833661] WiFi@C23L3,operate_loader_phy() 387: oper_cfg: prim_ch(0), ht_bw(1), extcha(1), vht_bw(1), cen_ch_2(0), PhyMode=78!
+[   16.845133] WiFi@C23L1,operate_loader_phy() 397: phy_freq_adjust failed!
+[   16.845320] WiFi@C00L2,dump_ht_cap() 29: Caller: wlan_operate_init+0xa8/0x150 [mt_wifi]
+[   16.860068] WiFi@C12L1,wifi_sys_open() 902: wifi_sys_open():band0 group_idx[0]=0, bw_grp=16 omac=0
+[   16.869082] WiFi@C08L3,hw_ctrl_flow_v2_open() 13: wdev_idx=0
+[   16.874897] WiFi@C23L1,HcGetBandByChannel() 1229: No hdev parking on channel:0, just return a default band_idx 0!
+[   16.885190] WiFi@C02L2,AsicRadioOnOffCtrl() 2338: DbdcIdx=0 RadioOn
+[   16.892057] WiFi@C00L2,ApAutoChannelAtBootUp() 333: ----------------->
+[   16.898715] WiFi@C03L1,MtCmdSetMacTxRx() 10245: (ret = 0)
+[   16.904228] WiFi@C03L1,MtCmdSetMacTxRx() 10245: (ret = 0)
+[   16.909832] WiFi@C08L1,UpdateBeaconHandler() 1889: wdev(0) bss not ready (state:0, caller:MTAPAutoSelectChannel+0x104/0x410 [mt_wifi])!!
+[   16.922179] WiFi@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   16.931320] WiFi@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=1, ctrl_ch2=0, cent_ch=1 DBDCIdx=0, ChBand=0, BW=0, TXStream=2, RXStream=2, scan(1)
+[   16.969578] WiFi@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=1, ctrl_ch2=0, cent_ch=1, RxPath=3, BandIdx=0, ChBand=0, BW=0,TXStream=2, RXStream=3, scan(1)
+[   17.324950] WiFi@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   17.334103] WiFi@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=2, ctrl_ch2=0, cent_ch=2 DBDCIdx=0, ChBand=0, BW=0, TXStream=2, RXStream=2, scan(1)
+[   17.372391] WiFi@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=2, ctrl_ch2=0, cent_ch=2, RxPath=3, BandIdx=0, ChBand=0, BW=0,TXStream=2, RXStream=3, scan(1)
+[   17.724941] WiFi@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   17.734096] WiFi@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=3, ctrl_ch2=0, cent_ch=3 DBDCIdx=0, ChBand=0, BW=0, TXStream=2, RXStream=2, scan(1)
+[   17.772380] WiFi@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=3, ctrl_ch2=0, cent_ch=3, RxPath=3, BandIdx=0, ChBand=0, BW=0,TXStream=2, RXStream=3, scan(1)
+[   18.128955] WiFi@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   18.138108] WiFi@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=4, ctrl_ch2=0, cent_ch=4 DBDCIdx=0, ChBand=0, BW=0, TXStream=2, RXStream=2, scan(1)
+[   18.176378] WiFi@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=4, ctrl_ch2=0, cent_ch=4, RxPath=3, BandIdx=0, ChBand=0, BW=0,TXStream=2, RXStream=3, scan(1)
+[   18.532939] WiFi@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   18.542088] WiFi@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=5, ctrl_ch2=0, cent_ch=5 DBDCIdx=0, ChBand=0, BW=0, TXStream=2, RXStream=2, scan(1)
+[   18.580352] WiFi@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=5, ctrl_ch2=0, cent_ch=5, RxPath=3, BandIdx=0, ChBand=0, BW=0,TXStream=2, RXStream=3, scan(1)
+[   18.936946] WiFi@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   18.946099] WiFi@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=6, ctrl_ch2=0, cent_ch=6 DBDCIdx=0, ChBand=0, BW=0, TXStream=2, RXStream=2, scan(1)
+[   18.984372] WiFi@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=6, ctrl_ch2=0, cent_ch=6, RxPath=3, BandIdx=0, ChBand=0, BW=0,TXStream=2, RXStream=3, scan(1)
+[   19.340946] WiFi@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   19.350097] WiFi@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=7, ctrl_ch2=0, cent_ch=7 DBDCIdx=0, ChBand=0, BW=0, TXStream=2, RXStream=2, scan(1)
+[   19.388365] WiFi@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=7, ctrl_ch2=0, cent_ch=7, RxPath=3, BandIdx=0, ChBand=0, BW=0,TXStream=2, RXStream=3, scan(1)
+[   19.744946] WiFi@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   19.754100] WiFi@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=8, ctrl_ch2=0, cent_ch=8 DBDCIdx=0, ChBand=0, BW=0, TXStream=2, RXStream=2, scan(1)
+[   19.792371] WiFi@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=8, ctrl_ch2=0, cent_ch=8, RxPath=3, BandIdx=0, ChBand=0, BW=0,TXStream=2, RXStream=3, scan(1)
+[   20.148941] WiFi@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   20.158084] WiFi@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=9, ctrl_ch2=0, cent_ch=9 DBDCIdx=0, ChBand=0, BW=0, TXStream=2, RXStream=2, scan(1)
+[   20.196332] WiFi@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=9, ctrl_ch2=0, cent_ch=9, RxPath=3, BandIdx=0, ChBand=0, BW=0,TXStream=2, RXStream=3, scan(1)
+[   20.552940] WiFi@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   20.562091] WiFi@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=10, ctrl_ch2=0, cent_ch=10 DBDCIdx=0, ChBand=0, BW=0, TXStream=2, RXStream=2, scan(1)
+[   20.600530] WiFi@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=10, ctrl_ch2=0, cent_ch=10, RxPath=3, BandIdx=0, ChBand=0, BW=0,TXStream=2, RXStream=3, scan(1)
+[   20.956960] WiFi@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   20.966111] WiFi@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=11, ctrl_ch2=0, cent_ch=11 DBDCIdx=0, ChBand=0, BW=0, TXStream=2, RXStream=2, scan(1)
+[   21.004556] WiFi@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=11, ctrl_ch2=0, cent_ch=11, RxPath=3, BandIdx=0, ChBand=0, BW=0,TXStream=2, RXStream=3, scan(1)
+[   21.360947] WiFi@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   21.370100] WiFi@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=12, ctrl_ch2=0, cent_ch=12 DBDCIdx=0, ChBand=0, BW=0, TXStream=2, RXStream=2, scan(1)
+[   21.408546] WiFi@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=12, ctrl_ch2=0, cent_ch=12, RxPath=3, BandIdx=0, ChBand=0, BW=0,TXStream=2, RXStream=3, scan(1)
+[   21.764941] WiFi@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   21.774092] WiFi@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=13, ctrl_ch2=0, cent_ch=13 DBDCIdx=0, ChBand=0, BW=0, TXStream=2, RXStream=2, scan(1)
+[   21.812538] WiFi@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=13, ctrl_ch2=0, cent_ch=13, RxPath=3, BandIdx=0, ChBand=0, BW=0,TXStream=2, RXStream=3, scan(1)
+[   21.836932] WiFi@C08L1,UpdateBeaconHandler() 1889: wdev(0) bss not ready (state:0, caller:update_ap_qload_to_bcn+0xac/0xe0 [mt_wifi])!!
+[   22.165095] WiFi@C08L1,UpdateBeaconHandler() 1889: wdev(0) bss not ready (state:0, caller:MTAPAutoSelectChannel+0x250/0x410 [mt_wifi])!!
+[   22.177374] WiFi@C23L3,SelectClearChannelBusyTime() 1880: ====================================================================
+[   22.188762] WiFi@C23L3,SelectClearChannelBusyTime() 1883: Channel   1 : Busy Time =  20435, Skip Channel = FALSE, BwCap = TRUE
+[   22.200141] WiFi@C23L3,SelectClearChannelBusyTime() 1883: Channel   2 : Busy Time =   5985, Skip Channel = FALSE, BwCap = TRUE
+[   22.211523] WiFi@C23L3,SelectClearChannelBusyTime() 1883: Channel   3 : Busy Time =   7340, Skip Channel = FALSE, BwCap = TRUE
+[   22.222902] WiFi@C23L3,SelectClearChannelBusyTime() 1883: Channel   4 : Busy Time =   4662, Skip Channel = FALSE, BwCap = TRUE
+[   22.234285] WiFi@C23L3,SelectClearChannelBusyTime() 1883: Channel   5 : Busy Time =   5420, Skip Channel = FALSE, BwCap = TRUE
+[   22.245666] WiFi@C23L3,SelectClearChannelBusyTime() 1883: Channel   6 : Busy Time =  20552, Skip Channel = FALSE, BwCap = TRUE
+[   22.257045] WiFi@C23L3,SelectClearChannelBusyTime() 1883: Channel   7 : Busy Time =   4921, Skip Channel = FALSE, BwCap = TRUE
+[   22.264786] usb 2-1: new SuperSpeed USB device number 2 using xhci-mtk
+[   22.268422] WiFi@C23L3,SelectClearChannelBusyTime() 1883: Channel   8 : Busy Time =   2228, Skip Channel = FALSE, BwCap = TRUE
+[   22.286317] WiFi@C23L3,SelectClearChannelBusyTime() 1883: Channel   9 : Busy Time =   5083, Skip Channel = FALSE, BwCap = TRUE
+[   22.297701] WiFi@C23L3,SelectClearChannelBusyTime() 1883: Channel  10 : Busy Time =   3497, Skip Channel = FALSE, BwCap = TRUE
+[   22.301452] usb 2-1: LPM exit latency is zeroed, disabling LPM.
+[   22.309079] WiFi@C23L3,SelectClearChannelBusyTime() 1883: Channel  11 : Busy Time =  11648, Skip Channel = FALSE, BwCap = TRUE
+[   22.309086] WiFi@C23L3,SelectClearChannelBusyTime() 1883: Channel  12 : Busy Time =   7024, Skip Channel = FALSE, BwCap = TRUE
+[   22.337773] WiFi@C23L3,SelectClearChannelBusyTime() 1883: Channel  13 : Busy Time =   1206, Skip Channel = FALSE, BwCap = TRUE
+[   22.349169] WiFi@C23L3,SelectClearChannelBusyTime() 1889: ====================================================================
+[   22.360565] WiFi@C23L3,SelectClearChannelBusyTime() 2124: Rule 3 Channel Busy time value : Select Primary Channel 13
+[   22.371081] WiFi@C23L3,SelectClearChannelBusyTime() 2126: Rule 3 Channel Busy time value : Min Channel Busy = 1206
+[   22.381422] WiFi@C23L3,SelectClearChannelBusyTime() 2128: Rule 3 Channel Busy time value : BW = 20
+[   22.390375] WiFi@C23L3,SelectClearChannelBusyTime() 2166: [SelectClearChannelBusyTime] - band0 END
+[   22.399335] WiFi@C23L3,operate_loader_phy() 387: oper_cfg: prim_ch(13), ht_bw(1), extcha(3), vht_bw(1), cen_ch_2(0), PhyMode=78!
+[   22.410893] WiFi@C23L3,operate_loader_phy() 402: oper_dev after adjust: bw(1), prim_ch(13), cen_ch_1(11), cen_ch_2(0),ext_cha(3)!
+[   22.422543] WiFi@C23L3,operate_loader_phy() 423: oper_radio after decision: bw(1), prim_ch(13), cen_ch_1(11), cen_ch_2(0)!
+[   22.433639] WiFi@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   22.442775] WiFi@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=13, ctrl_ch2=0, cent_ch=11 DBDCIdx=0, ChBand=0, BW=1, TXStream=2, RXStream=2, scan(0)
+[   22.591183] WiFi@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=13, ctrl_ch2=0, cent_ch=11, RxPath=3, BandIdx=0, ChBand=0, BW=1,TXStream=2, RXStream=3, scan(0)
+[   22.604973] WiFi@C12L1,EDCCAInit() 20989: EDCCA compensation: uni_compensation=0, bw_compensation=0, final compensation=0
+[   22.615951] WiFi@C23L1,DfsBuildChannelList() 3663: [RDM]: wdev is not 5G.
+[   22.622746] WiFi@C23L3,zero_wait_dfs_switch_ch() 924: outband ch 0, ch_stat 0
+[   22.630065] WiFi@C08L2,APStartUpForMbss() 983: ===>(caller:ap_inf_open+0x110/0x4cc [mt_wifi]), mbss_idx:0, CfgMode:0
+[   22.640609] WiFi@C15L2,APPMFInit() 130: [PMF] apidx=0, MFPC=0, MFPR=0, SHA256=0
+[   22.647927] WiFi@C18L3,BuildChannelList() 484: 
+[   22.652686] WiFi@C00L2,dump_ht_cap() 29: Caller: dump_ht_cap+0x14/0x2c [mt_wifi]
+[   22.660303] WiFi@C08L2,ap_link_up() 7142: (caller:wdev_do_linkup+0x24/0x40 [mt_wifi]), wdev(0)
+[   22.668938] WiFi@C01L3,wifi_sys_linkup() 1231: wdev idx = 0
+[   22.747587] WiFi@C00L3,wtc_acquire_groupkey_wcid() 81:  Found a non-occupied wtbl_idx:287 for WDEV_TYPE:1
+[   22.747587]  LinkToOmacIdx = 0, LinkToWdevType = 1
+[   22.761965] WiFi@C08L3,hw_ctrl_flow_v2_link_up() 72: wdev_idx=0
+[   22.779042] WiFi@C08L3,UpdateBeaconHandler() 1910: BCN_UPDATE_INIT, OmacIdx = 0 (ra0)
+[   22.786883] WiFi@C08L3,UpdateBeaconHandler() 1923: 	Band0 BcnInitedRnd = 59
+[   22.806282] WiFi@C12L1,EDCCAInit() 20989: EDCCA compensation: uni_compensation=0, bw_compensation=0, final compensation=0
+[   22.817253] WiFi@C03L3,MtCmdTxPwrShowInfo() 13745: ucTxPowerInfoCatg: 2, BandIdx: 0 
+[   22.825009] WiFi@C03L3,MtCmdTxPwrShowInfo() 13774: (ret = 0)
+[   22.831396] br0: port 3(ra0) entered blocking state
+[   22.836303] br0: port 3(ra0) entered disabled state
+[   22.841350] device ra0 entered promiscuous mode
++ echo hostapd.sh:  start_rt
+hostapd.sh:  start_rt
++ bash /usr/bin/hostapd_genconf.sh
++ func_start_rt
++ start-stop-daemon -S -m -p /var/run/hostapd.wlan0.pid -x /usr/sbin/hostapd -- -t /var/run/hostapd/hostapd-wlan0.conf
+[   22.932506] br0: port 3(ra0) entered blocking state
+[   22.937409] br0: port 3(ra0) entered forwarding state
+[   22.942502] br0: port 1(lan2) entered blocking state
+[   22.947468] br0: port 1(lan2) entered forwarding state
+[   23.211656] mt7530-mdio mdio-bus:1f wan: configuring for phy/gmii link mode
+[   23.224473] mt7530-mdio mdio-bus:1f wan: Link is Up - 1Gbps/Full - flow control rx/tx
+[   23.232546] IPv6: ADDRCONF(NETDEV_CHANGE): wan: link becomes ready
+[   23.296192] 7981@C12L1,rt28xx_ap_ioctl() 865: interface is down, cmd [8be2] return!!!
+Interface doesn't accept private ioctl...
+set ([   23.307021] 7981@C12L1,rt28xx_ap_ioctl() 865: interface is down, cmd [8be2] return!!!
+8BE2): Network is down
+Interface doesn't accept[   23.319000] 7981@C12L1,rt28xx_ap_ioctl() 865: interface is down, cmd [8be2] return!!!
+ private ioctl...
+set (8BE2): Network is down
+Interface doesn't accept private ioctl...
+set (8BE2): Network is down
+[   23.836659] IPv6: ADDRCONF(NETDEV_CHANGE): br0: link becomes ready
+rstats
+Copyright (C) 2006-2009 Jonathan Zarate
+
+event signal: User defined signal 1
+rc notification: start_vpn_client
+rc notification: restart_firewall_wan
+[   24.560572] 7981@C12L1,rt28xx_ap_ioctl() 865: interface is down, cmd [8be2] return!!!
+Interface doesn't accept private ioctl...
+set (8BE2): Network is down
+[   24.574386] started_script. (864): drop_caches: 3
+[   24.638060] 7981@C12L1,rt28xx_ap_ioctl() 865: interface is down, cmd [8be2] return!!!
+Interface doesn't accept private ioctl...
+set ([   24.649415] 7981@C12L1,rt28xx_ap_ioctl() 865: interface is down, cmd [8be2] return!!!
+8BE2): Network is down
+Interface doesn't accept private ioctl...
+set (8BE2): Network is down
+Cannot find device "eth1"
+
+
+BusyBox v1.24.2 (2026-09-21 09:29:30 UTC) built-in shell (ash)
+Enter 'help' for a list of built-in commands.
+
+/ # event signal: User defined signal 1
+event signal: User defined signal 1
+rc notification: control_wifi_guest_wl_off
+event signal: User defined signal 1
+event signal: User defined signal 1
+rc notification: control_wifi_radio_wl_on
++ echo hostapd.sh:  stop_wl
+hostapd.sh:  stop_wl
++ bash /usr/bin/hostapd_genconf.sh
++ func_stop_wl
++ start-stop-daemon -K -p /var/run/hostapd.wlan1.pid -x /usr/sbin/hostapd
+no /usr/sbin/hostapd found; none killed
++ sleep 1
+[   35.193306] 7981@C08L2,mbss_virtual_if_open() 133:  ===> rax0
+[   35.199095] 7981@C01L2,RTMP_COM_IoctlHandle() 1510: -> CMD_RTPRIV_IOCTL_VIRTUAL_INF_INIT
+[   35.207217] 7981@C01L2,RTMP_COM_IoctlHandle() 1487:  -> CMD_RTPRIV_IOCTL_VIRTUAL_INF_UP
+[   35.215238] WiFi@C01L3,wifi_sys_open() 855: wdev idx = 2
+[   35.220839] 7981@C18L3,BuildChannelList() 484: 
+[   35.225417] 7981@C00L3,BuildChannelList() 512: BandIdx = 1, PhyMode = 177, ChListNum = 13:
+[   35.233721] 7981@C23L3,DfsBuildChannelList() 3708: Done
+[   35.238962] 7981@C23L3,RadarStateCheck() 243: Zero Wait State: 0
+[   35.245021] 7981@C23L3,RadarStateCheck() 290: [1;33m RD_NORMAL_MODE [m 
+[   35.251852] 7981@C23L3,operate_loader_phy() 387: oper_cfg: prim_ch(0), ht_bw(1), extcha(1), vht_bw(1), cen_ch_2(0), PhyMode=177!
+[   35.263410] 7981@C23L1,operate_loader_phy() 397: phy_freq_adjust failed!
+[   35.263600] WiFi@C00L2,dump_ht_cap() 29: Caller: wlan_operate_init+0xa8/0x150 [mt_wifi]
+[   35.278386] WiFi@C12L1,wifi_sys_open() 902: wifi_sys_open():band1 group_idx[2]=4, bw_grp=16 omac=0
+[   35.287386] 7981@C08L3,hw_ctrl_flow_v2_open() 13: wdev_idx=2
+[   35.294207] 7981@C23L1,HcGetBandByChannel() 1229: No hdev parking on channel:0, just return a default band_idx 0!
+[   35.304509] 7981@C02L2,AsicRadioOnOffCtrl() 2338: DbdcIdx=0 RadioOn
+[   35.311378] 7981@C00L2,ApAutoChannelAtBootUp() 333: ----------------->
+[   35.318035] 7981@C03L1,MtCmdSetMacTxRx() 10245: (ret = 0)
+[   35.323551] 7981@C03L1,MtCmdSetMacTxRx() 10245: (ret = 0)
+[   35.328960] 7981@C23L3,AutoChSelBuildChannelListFor56G() 2724: ChListNum56G = 13
+[   35.336365] 7981@C23L3,AutoChSelBuildChannelListFor56G() 2917: ACSChListNum = 8
+[   35.343863] 7981@C08L1,UpdateBeaconHandler() 1889: wdev(2) bss not ready (state:0, caller:MTAPAutoSelectChannel+0x104/0x410 [mt_wifi])!!
+[   35.356221] 7981@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   35.365369] 7981@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=36, ctrl_ch2=0, cent_ch=36 DBDCIdx=1, ChBand=1, BW=0, TXStream=3, RXStream=3, scan(1)
+[   35.426242] 7981@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=36, ctrl_ch2=0, cent_ch=36, RxPath=7, BandIdx=1, ChBand=1, BW=0,TXStream=3, RXStream=7, scan(1)
+[   36.088966] 7981@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   36.098127] 7981@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=40, ctrl_ch2=0, cent_ch=40 DBDCIdx=1, ChBand=1, BW=0, TXStream=3, RXStream=3, scan(1)
+[   36.159033] 7981@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=40, ctrl_ch2=0, cent_ch=40, RxPath=7, BandIdx=1, ChBand=1, BW=0,TXStream=3, RXStream=7, scan(1)
+[   36.608964] 7981@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   36.618121] 7981@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=44, ctrl_ch2=0, cent_ch=44 DBDCIdx=1, ChBand=1, BW=0, TXStream=3, RXStream=3, scan(1)
+[   36.678955] 7981@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=44, ctrl_ch2=0, cent_ch=44, RxPath=7, BandIdx=1, ChBand=1, BW=0,TXStream=3, RXStream=7, scan(1)
+[   37.128958] 7981@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   37.138115] 7981@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=48, ctrl_ch2=0, cent_ch=48 DBDCIdx=1, ChBand=1, BW=0, TXStream=3, RXStream=3, scan(1)
+[   37.198957] 7981@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=48, ctrl_ch2=0, cent_ch=48, RxPath=7, BandIdx=1, ChBand=1, BW=0,TXStream=3, RXStream=7, scan(1)
+[   37.464942] 7981@C08L1,UpdateBeaconHandler() 1889: wdev(2) bss not ready (state:0, caller:update_ap_qload_to_bcn+0xac/0xe0 [mt_wifi])!!
+[   37.652964] 7981@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   37.662122] 7981@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=149, ctrl_ch2=0, cent_ch=149 DBDCIdx=1, ChBand=1, BW=0, TXStream=3, RXStream=3, scan(1)
+[   37.723227] 7981@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=149, ctrl_ch2=0, cent_ch=149, RxPath=7, BandIdx=1, ChBand=1, BW=0,TXStream=3, RXStream=7, scan(1)
+[   38.388946] 7981@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   38.398100] 7981@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=153, ctrl_ch2=0, cent_ch=153 DBDCIdx=1, ChBand=1, BW=0, TXStream=3, RXStream=3, scan(1)
+[   38.459188] 7981@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=153, ctrl_ch2=0, cent_ch=153, RxPath=7, BandIdx=1, ChBand=1, BW=0,TXStream=3, RXStream=7, scan(1)
+[   38.916961] 7981@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   38.926115] 7981@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=157, ctrl_ch2=0, cent_ch=157 DBDCIdx=1, ChBand=1, BW=0, TXStream=3, RXStream=3, scan(1)
+[   38.987207] 7981@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=157, ctrl_ch2=0, cent_ch=157, RxPath=7, BandIdx=1, ChBand=1, BW=0,TXStream=3, RXStream=7, scan(1)
+[   39.436948] 7981@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   39.446101] 7981@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=161, ctrl_ch2=0, cent_ch=161 DBDCIdx=1, ChBand=1, BW=0, TXStream=3, RXStream=3, scan(1)
+[   39.507151] 7981@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=161, ctrl_ch2=0, cent_ch=161, RxPath=7, BandIdx=1, ChBand=1, BW=0,TXStream=3, RXStream=7, scan(1)
+[   39.965118] 7981@C08L1,UpdateBeaconHandler() 1889: wdev(2) bss not ready (state:0, caller:MTAPAutoSelectChannel+0x250/0x410 [mt_wifi])!!
+[   39.977482] 7981@C23L3,SelectClearChannelBusyTime() 1880: ====================================================================
+[   39.988876] 7981@C23L3,SelectClearChannelBusyTime() 1883: Channel  36 : Busy Time =   2364, Skip Channel = FALSE, BwCap = TRUE
+[   40.000258] 7981@C23L3,SelectClearChannelBusyTime() 1883: Channel  40 : Busy Time =   2243, Skip Channel = FALSE, BwCap = TRUE
+[   40.011639] 7981@C23L3,SelectClearChannelBusyTime() 1883: Channel  44 : Busy Time =   3169, Skip Channel = FALSE, BwCap = TRUE
+[   40.023025] 7981@C23L3,SelectClearChannelBusyTime() 1883: Channel  48 : Busy Time =   2593, Skip Channel = FALSE, BwCap = TRUE
+[   40.034425] 7981@C23L3,SelectClearChannelBusyTime() 1883: Channel 149 : Busy Time =      0, Skip Channel = FALSE, BwCap = TRUE
+[   40.045806] 7981@C23L3,SelectClearChannelBusyTime() 1883: Channel 153 : Busy Time =      0, Skip Channel = FALSE, BwCap = TRUE
+[   40.057196] 7981@C23L3,SelectClearChannelBusyTime() 1883: Channel 157 : Busy Time =     12, Skip Channel = FALSE, BwCap = TRUE
+[   40.068575] 7981@C23L3,SelectClearChannelBusyTime() 1883: Channel 161 : Busy Time =      0, Skip Channel = FALSE, BwCap = TRUE
+[   40.079954] 7981@C23L3,SelectClearChannelBusyTime() 1889: ====================================================================
+[   40.091368] 7981@C23L3,SelectClearChannelBusyTime() 2124: Rule 3 Channel Busy time value : Select Primary Channel 149
+[   40.101980] 7981@C23L3,SelectClearChannelBusyTime() 2126: Rule 3 Channel Busy time value : Min Channel Busy = 12
+[   40.112146] 7981@C23L3,SelectClearChannelBusyTime() 2128: Rule 3 Channel Busy time value : BW = 80
+[   40.121105] 7981@C23L3,SelectClearChannelBusyTime() 2166: [SelectClearChannelBusyTime] - band1 END
+[   40.130062] 7981@C23L3,RadarStateCheck() 243: Zero Wait State: 0
+[   40.136066] 7981@C23L3,RadarStateCheck() 290: [1;33m RD_NORMAL_MODE [m 
+[   40.142858] 7981@C23L3,operate_loader_phy() 387: oper_cfg: prim_ch(149), ht_bw(1), extcha(1), vht_bw(1), cen_ch_2(0), PhyMode=177!
+[   40.154593] 7981@C23L3,operate_loader_phy() 402: oper_dev after adjust: bw(2), prim_ch(149), cen_ch_1(155), cen_ch_2(0),ext_cha(1)!
+[   40.166433] 7981@C23L3,operate_loader_phy() 423: oper_radio after decision: bw(2), prim_ch(149), cen_ch_1(155), cen_ch_2(0)!
+[   40.177735] 7981@C00L1,mt7981_apply_dpd_flatness_data() 622: eeprom 0x19a bit 0 is 0, do runtime cal
+[   40.186875] 7981@C03L3,MtCmdChannelSwitch() 2534: ctrl_chl=149, ctrl_ch2=0, cent_ch=155 DBDCIdx=1, ChBand=1, BW=2, TXStream=3, RXStream=3, scan(0)
+[   40.427155] 7981@C03L3,MtCmdSetTxRxPath() 2795: ctrl_chl=149, ctrl_ch2=0, cent_ch=155, RxPath=7, BandIdx=1, ChBand=1, BW=2,TXStream=3, RXStream=7, scan(0)
+[   40.446063] 7981@C12L1,EDCCAInit() 20989: EDCCA compensation: uni_compensation=0, bw_compensation=0, final compensation=0
+[   40.457085] 7981@C23L3,DfsBuildChannelList() 3708: Done
+[   40.462325] 7981@C23L3,zero_wait_dfs_switch_ch() 924: outband ch 0, ch_stat 0
+[   40.469456] 7981@C23L3,zero_wait_dfs_switch_ch() 931: bDedicatedZeroWaitDefault == 0
+[   40.477397] 7981@C08L2,APStartUpForMbss() 983: ===>(caller:ap_inf_open+0x110/0x4cc [mt_wifi]), mbss_idx:2, CfgMode:0
+[   40.487935] 7981@C15L2,APPMFInit() 130: [PMF] apidx=2, MFPC=0, MFPR=0, SHA256=0
+[   40.495253] 7981@C18L3,BuildChannelList() 484: 
+[   40.499988] WiFi@C00L2,dump_ht_cap() 29: Caller: dump_ht_cap+0x14/0x2c [mt_wifi]
+[   40.507660] WiFi@C08L2,ap_link_up() 7142: (caller:wdev_do_linkup+0x24/0x40 [mt_wifi]), wdev(2)
+[   40.516312] 7981@C01L3,wifi_sys_linkup() 1231: wdev idx = 2
+[   40.595113] 7981@C00L3,wtc_acquire_groupkey_wcid() 81:  Found a non-occupied wtbl_idx:286 for WDEV_TYPE:1
+[   40.595113]  LinkToOmacIdx = 0, LinkToWdevType = 1
+[   40.609488] 7981@C08L3,hw_ctrl_flow_v2_link_up() 72: wdev_idx=2
+[   40.619115] 7981@C08L3,UpdateBeaconHandler() 1910: BCN_UPDATE_INIT, OmacIdx = 0 (rax0)
+[   40.627046] 7981@C08L3,UpdateBeaconHandler() 1923: 	Band1 BcnInitedRnd = 230
+[   40.646808] 7981@C12L1,EDCCAInit() 20989: EDCCA compensation: uni_compensation=0, bw_compensation=0, final compensation=0
+[   40.657804] 7981@C03L3,MtCmdTxPwrShowInfo() 13745: ucTxPowerInfoCatg: 2, BandIdx: 1 
+[   40.665571] 7981@C03L3,MtCmdTxPwrShowInfo() 13774: (ret = 0)
+[   40.672085] br0: port 4(rax0) entered blocking state
+[   40.677072] br0: port 4(rax0) entered disabled state
+[   40.682209] device rax0 entered promiscuous mode
+[   40.686910] br0: port 4(rax0) entered blocking state
+[   40.691876] br0: port 4(rax0) entered forwarding state
++ echo hostapd.sh:  start_wl
+hostapd.sh:  start_wl
++ bash /usr/bin/hostapd_genconf.sh
++ func_start_wl
++ start-stop-daemon -S -m -p /var/run/hostapd.wlan1.pid -x /usr/sbin/hostapd -- -t /var/run/hostapd/hostapd-wlan1.conf
+rc notification: control_wifi_guest_rt_off
+rc notification: control_wifi_radio_rt_on
