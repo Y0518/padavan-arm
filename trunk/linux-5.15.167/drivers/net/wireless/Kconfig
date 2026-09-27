@@ -113,3 +113,4 @@ config VIRT_WIFI
 
 endif # WLAN
 source "drivers/net/wireless/mt_wifi_ap/Kconfig"
+source "drivers/net/wireless/conninfra/Kconfig"

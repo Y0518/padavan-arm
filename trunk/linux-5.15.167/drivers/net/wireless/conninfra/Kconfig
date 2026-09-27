@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# MediaTek conninfra (connectivity infrastructure).
+#
+# Required by the closed source mt_wifi driver on MT7981/MT7986: it powers the
+# WMAC on/off and hands out the firmware EMI base (see the comment in the
+# Makefile next to this one).  Symbol names deliberately match the OpenWrt
+# package so mt_wifi's `ifeq ($(CONFIG_CONNINFRA_APSOC),y)` keeps working.
+
+config CONNINFRA_APSOC
+	tristate "MediaTek conninfra driver (needed by the closed source mt_wifi)"
+	help
+	  Connectivity infrastructure driver for MT7981/MT7986 SoCs.
+	  The MTK closed source mt_wifi driver calls conninfra_pwr_on(),
+	  conninfra_pwr_off() and conninfra_get_emi_phy_addr(); without this
+	  the WMAC is never powered up and mt_wifi_init fails.
+
+config CONNINFRA_APSOC_MT7986
+	bool "MT7986"
+	depends on CONNINFRA_APSOC
+
+config CONNINFRA_APSOC_MT7981
+	bool "MT7981"
+	depends on CONNINFRA_APSOC
+
+config CONNINFRA_EMI_SUPPORT
+	bool "EMI support"
+	depends on CONNINFRA_APSOC
+
+config CONNINFRA_AUTO_UP
+	bool "Bring conninfra up by self"
+	depends on CONNINFRA_APSOC

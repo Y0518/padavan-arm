@@ -90,6 +90,40 @@ nvram_restore_defaults(void)
 		}
 	}
 
+	/* One-time migration: units flashed before the MT7981B eeprom-offset
+	 * fix carry default SSIDs built with the bogus suffix "_0000", and
+	 * nvram_restore_defaults() only fills absent variables, so they would
+	 * keep it forever.  Rewrite a name only when it still looks like the
+	 * built-in default: BOARD_PID + "_" prefix and a "0000" suffix. */
+	int ssid_migrated = 0;
+
+	if (strcmp(lan_mac, "0000") && strcmp(lan_mac, "FFFF")) {
+		static const char *ssid_keys[] = {
+			"rt_ssid", "rt_ssid2", "wl_ssid", "wl_ssid2",
+			"rt_guest_ssid", "wl_guest_ssid", NULL
+		};
+		const char *ssid_prefix = BOARD_PID "_";
+		size_t ssid_plen = strlen(ssid_prefix);
+		int sk;
+
+		for (sk = 0; ssid_keys[sk]; sk++) {
+			const char *cur = nvram_safe_get(ssid_keys[sk]);
+			size_t clen = strlen(cur);
+			char fixed[64];
+
+			if (clen < 4 || strncmp(cur, ssid_prefix, ssid_plen) != 0)
+				continue;
+			if (strcmp(cur + clen - 4, "0000") != 0)
+				continue;
+
+			snprintf(fixed, sizeof(fixed), "%.*s%s",
+				(int)(clen - 4), cur, lan_mac);
+			nvram_set(ssid_keys[sk], fixed);
+			ssid_migrated = 1;
+			printf("%s: SSID suffix migrated: %s -> %s\n",
+				ssid_keys[sk], cur, fixed);
+		}
+	}
 
 	char proc_rand_lan_mac[18] = {0};
 	FILE *fp;
@@ -110,15 +144,26 @@ nvram_restore_defaults(void)
 	nvram_modem_rule = nvram_get_int("modem_rule");
 	nvram_ipv6_type = get_ipv6_type();
 
-	return restore_defaults;
+	return restore_defaults || ssid_migrated;
 }
 
 static void
 load_wireless_modules(void)
 {
-//#if defined (USE_MT7981_AP)
+#if defined (USE_MT7915_AP)
+	/*
+	 * MTK closed-source mt_wifi (mt7981).  Loaded as a kernel module so
+	 * that it can read /etc/wireless/l1profile.dat: it is insmod'ed here,
+	 * after the rootfs is mounted.  A built-in driver is probed before
+	 * that, load_dev_l1profile() fails and no wlan interface appears.
+	 * modprobe resolves mt_wifi_mtd.ko (Factory accessors used by
+	 * ee_flash.c) by itself.
+	 */
+	module_smart_load("mt_wifi", NULL);
+#else
+	/* Open-source in-tree mt76 stack. */
 	module_smart_load("mt7915e", NULL);
-//#endif
+#endif
 #if defined (USE_RT2860V2_AP)
 	module_smart_load("rt2860v2_ap", NULL);
 #endif
@@ -541,7 +586,7 @@ flash_firmware(void)
 		start_watchdog();
 	}
 */
-	if (eval("bash", "/sbin/sysupgrade-handler.sh", STR(CONFIG_BOARD_COMP), FW_IMG_NAME) != 0) {
+	if (eval("bash", "/sbin/sysupgrade-handler-uni.sh", STR(CONFIG_BOARD_COMP), FW_IMG_NAME) != 0) {
 		start_watchdog();
 		sys_exit();
 	}

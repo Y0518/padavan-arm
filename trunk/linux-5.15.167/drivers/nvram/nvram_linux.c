@@ -139,9 +139,9 @@ int mt_mtd_read_nm_wifi(char *name, loff_t from, size_t len, u_char *buf)
  * name-based accessor for MTD_NVRAM_NAME ("u-boot-env").  Only the export
  * has to go, and nothing else in the tree links against these two.
  */
-#if !defined(CONFIG_MT_AP_SUPPORT)
+#if !IS_ENABLED(CONFIG_MT_AP_SUPPORT)
 EXPORT_SYMBOL(mt_mtd_read_nm_wifi);
-#endif /* !CONFIG_MT_AP_SUPPORT */
+#endif /* !IS_ENABLED(CONFIG_MT_AP_SUPPORT) */
 
 int mt_mtd_write_nm_wifi(char *name, loff_t to, size_t len, const u_char *buf)
 {
@@ -221,9 +221,9 @@ int mt_mtd_write_nm_wifi(char *name, loff_t to, size_t len, const u_char *buf)
  * name-based accessor for MTD_NVRAM_NAME ("u-boot-env").  Only the export
  * has to go, and nothing else in the tree links against these two.
  */
-#if !defined(CONFIG_MT_AP_SUPPORT)
+#if !IS_ENABLED(CONFIG_MT_AP_SUPPORT)
 EXPORT_SYMBOL(mt_mtd_write_nm_wifi);
-#endif /* !CONFIG_MT_AP_SUPPORT */
+#endif /* !IS_ENABLED(CONFIG_MT_AP_SUPPORT) */
 
 
 /* Globals */

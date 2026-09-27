@@ -768,6 +768,7 @@ ipt_filter_rules(char *man_if, char *wan_if, char *lan_if, char *lan_ip,
 	int i_vpns_enable, i_vpns_type, i_vpns_actl, i_http_proto, i_bfplimit_ref;
 	int i_vpnc_enable, i_vpnc_type, i_vpnc_sfw, i_mac_filter;
 	int is_soft_offload_enabled;
+	int is_hw_offload_enabled = 0;
 #if defined (APP_OPENVPN)
 	int i_vpns_ov_mode = nvram_get_int("vpns_ov_mode");
 #endif
@@ -798,6 +799,14 @@ ipt_filter_rules(char *man_if, char *wan_if, char *lan_if, char *lan_ip,
 	i_vpnc_sfw     = nvram_get_int("vpnc_sfw");
 
 	is_soft_offload_enabled = nvram_match("soft_offload_enable", "1");
+
+#if defined (USE_HW_NAT_PPE)
+	/* The SoC PPE has no hw_nat.ko to load: hw_nat_mode 1/2 drive the same
+	   flowtable rules, just with --hw so flows are pushed into mtk_ppe. */
+	is_hw_offload_enabled = nvram_get_int("hw_nat_mode");
+	if (is_hw_offload_enabled)
+		is_soft_offload_enabled = 1;
+#endif
 
 	vpnc_if = NULL;
 	if (i_vpnc_enable) {
@@ -1068,8 +1077,10 @@ ipt_filter_rules(char *man_if, char *wan_if, char *lan_if, char *lan_ip,
 		fprintf(fp, "-A %s -m length --length 0:128 -m %s %s -j %s\n", dtype, CT_STATE, "ESTABLISHED", ftype);
 		
 		/* 2. Large packets offloaded: forward bulk TCP/UDP data traffic via FLOWOFFLOAD to save CPU cycles */
-		fprintf(fp, "-A %s -p tcp -m %s %s -j FLOWOFFLOAD --hw\n", dtype, CT_STATE, "ESTABLISHED");
-		fprintf(fp, "-A %s -p udp -m %s %s -j FLOWOFFLOAD --hw\n", dtype, CT_STATE, "ESTABLISHED");
+		fprintf(fp, "-A %s -p tcp -m %s %s -j FLOWOFFLOAD%s\n", dtype, CT_STATE, "ESTABLISHED",
+			(is_hw_offload_enabled) ? " --hw" : "");
+		fprintf(fp, "-A %s -p udp -m %s %s -j FLOWOFFLOAD%s\n", dtype, CT_STATE, "ESTABLISHED",
+			(is_hw_offload_enabled) ? " --hw" : "");
 
 
 	}
@@ -1263,7 +1274,13 @@ ipt_filter_default(void)
 	is_fw_enabled = nvram_match("fw_enable_x", "1");
 
 	int is_soft_offload_enabled = 0;
+	int is_hw_offload_enabled = 0;
 	is_soft_offload_enabled = nvram_match("soft_offload_enable", "1");
+#if defined (USE_HW_NAT_PPE)
+	is_hw_offload_enabled = nvram_get_int("hw_nat_mode");
+	if (is_hw_offload_enabled)
+		is_soft_offload_enabled = 1;
+#endif
 
 	if (!(fp=fopen(ipt_file, "w")))
 		return;
@@ -1294,8 +1311,10 @@ ipt_filter_default(void)
 		/* 1. Small packets bypass offload: force ACCEPT for packets <= 128 bytes to trigger fq_codel scheduling */
 		fprintf(fp, "-A %s -m length --length 0:128 -m %s %s -j %s\n", dtype, CT_STATE, "ESTABLISHED", ftype);
 		/* 2. Large packets offloaded: forward bulk TCP/UDP data traffic via FLOWOFFLOAD to save CPU cycles */
-		fprintf(fp, "-A %s -p tcp -m %s %s -j FLOWOFFLOAD --hw\n", dtype, CT_STATE, "ESTABLISHED");
-		fprintf(fp, "-A %s -p udp -m %s %s -j FLOWOFFLOAD --hw\n", dtype, CT_STATE, "ESTABLISHED");
+		fprintf(fp, "-A %s -p tcp -m %s %s -j FLOWOFFLOAD%s\n", dtype, CT_STATE, "ESTABLISHED",
+			(is_hw_offload_enabled) ? " --hw" : "");
+		fprintf(fp, "-A %s -p udp -m %s %s -j FLOWOFFLOAD%s\n", dtype, CT_STATE, "ESTABLISHED",
+			(is_hw_offload_enabled) ? " --hw" : "");
 	}
 
 
@@ -2140,6 +2159,55 @@ ipt_nat_default(void)
 	doSystem("iptables-restore %s", ipt_file);
 }
 
+#if defined (USE_HW_NAT_PPE)
+/*
+ * Part of hw_nat_mode that an iptables rule cannot express: whether the
+ * wireless interfaces are offloaded into the PPE as well.
+ *   1 = WAN <-> LAN/WLAN, 2 = WAN <-> LAN only, 0 = disabled.
+ * The closed MTK driver exposes this as the private ioctl
+ * "iwpriv <if> set hw_nat_register=<0|1>" (ap_cfg.c: set_hnat_register).
+ */
+static void
+hwnat_ppe_wifi_register(void)
+{
+	int mode = nvram_get_int("hw_nat_mode");
+	int reg = (mode == 1) ? 1 : 0;
+	const char *ifname;
+	char path[64];
+	FILE *fp;
+	int i;
+
+	if (mode == 0) {
+		logmessage(LOGNAME, "%s: %s", "Hardware NAT/Routing", "Disabled");
+		return;
+	}
+
+	for (i = 0; i < 4; i++) {
+		switch (i) {
+		case 0: ifname = IFNAME_2G_MAIN;  break;
+		case 1: ifname = IFNAME_5G_MAIN;  break;
+		case 2: ifname = IFNAME_2G_GUEST; break;
+		default: ifname = IFNAME_5G_GUEST; break;
+		}
+		if (!ifname || !*ifname)
+			continue;
+
+		/* The guest BSSs may be down (no rax1/ra1 yet); skip them so a
+		   firewall rebuild does not log a bogus failure. */
+		snprintf(path, sizeof(path), "/sys/class/net/%s/flags", ifname);
+		fp = fopen(path, "r");
+		if (!fp)
+			continue;
+		fclose(fp);
+
+		doSystem("iwpriv %s set hw_nat_register=%d", ifname, reg);
+	}
+
+	logmessage(LOGNAME, "%s: Enabled, IPoE/PPPoE offload [WAN]<->[%s]",
+		"Hardware NAT/Routing", (mode == 1) ? "LAN/WLAN" : "LAN");
+}
+#endif
+
 void
 start_firewall_ex(void)
 {
@@ -2209,6 +2277,10 @@ start_firewall_ex(void)
 
 	/* IPv4 Filter rules */
 	ipt_filter_rules(man_if, wan_if, lan_if, lan_ip, logaccept, logdrop, i_tcp_mss);
+
+#if defined (USE_HW_NAT_PPE)
+	hwnat_ppe_wifi_register();
+#endif
 
 #if defined (USE_IPV6)
 	/* IPv6 Mangle rules */

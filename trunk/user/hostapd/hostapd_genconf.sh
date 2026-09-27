@@ -52,15 +52,27 @@ generate_hostapd_conf() {
     local guest_enable=$(nvram get "${prefix}guest_enable")
 
     # Hardcode the standard hostapd hw_mode based on the physical interface name
+    # (wlan1 for the mt76/nl80211 stack, rax0 for the MTK closed-source stack).
+    #
+    # The MTK stack is pure WEXT (no nl80211) and the driver runs the AP together
+    # with WPA2-PSK itself -- padavan feeds SSID/WpaAuthMode/WPAPSK over iwpriv.
+    # This hostapd is only built with nl80211 + none, so for that stack it has to
+    # be started as driver=none, otherwise it exits immediately.
     local final_hw_mode="g"
-    if [ "$ifname" = "wlan1" ]; then
-        final_hw_mode="a"
+    local final_driver="nl80211"
+    case "$ifname" in
+        wlan1|rax0|rai0)
+            final_hw_mode="a"
+            ;;
+    esac
+    if [ -e /sys/module/mt_wifi ]; then
+        final_driver="none"
     fi
 
     # 1. Write basic physical and wireless attributes for the primary interface
     cat <<EOF > "$conf_file"
 interface=$ifname
-driver=nl80211
+driver=$final_driver
 bridge=br0
 ctrl_interface=/var/run/hostapd
 ssid=$ssid

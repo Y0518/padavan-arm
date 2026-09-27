@@ -161,7 +161,11 @@ ej_vpns_leases(int eid, webs_t wp, int argc, char **argv)
 
 int is_hwnat_loaded()
 {
-#if defined (USE_HW_NAT)
+#if defined (USE_HW_NAT_PPE)
+	/* No hw_nat.ko here -- the flows are taken over by the SoC PPE
+	   (mtk_ppe/mtk_ppe_offload), so "loaded" == hw_nat_mode is on. */
+	return (nvram_get_int("hw_nat_mode") != 0) ? 1 : 0;
+#elif defined (USE_HW_NAT)
 	DIR *dir_to_open = NULL;
 	FILE *fp;
 	char offload_val[32];
@@ -591,6 +595,35 @@ ralink_get_range_info(iwrange *	range, char* buffer, int length)
 #define RTPRIV_IOCTL_GET_MAC_TABLE		(SIOCIWFIRSTPRIV + 0x0F)
 #define RTPRIV_IOCTL_GET_MAC_TABLE_STRUCT	(SIOCIWFIRSTPRIV + 0x1F)
 
+/*
+ * zx17 -- buffer sizing for the Ralink-compat private ioctls.
+ *
+ * The MTK closed-source driver does NOT honour wrq.u.data.length on the way
+ * back: embedded/common/cmm_info.c:RTMPIoctlGetMacTableStaInfo() does
+ *     wrq->u.data.length = sizeof(RT_802_11_MAC_TABLE);
+ *     copy_to_user(wrq.u.data.pointer, pMacTab, wrq->u.data.length);
+ * i.e. it always copies its own struct (MT7981: 8 + 40*544 = 21768 bytes, up
+ * to 41208 with SW_CONNECT_SUPPORT).  The 4 KB stack buffer used here used to
+ * smash the stack and kill httpd with SIGSEGV, which took the whole web UI
+ * down with it (ERR_CONNECTION_REFUSED until /sbin/watchdog restarted httpd
+ * 20 s later).  Size the buffers from the struct and keep them off the stack --
+ * httpd is single threaded and none of these callers nest, so static is safe.
+ *
+ * Site survey: RTMPIoctlGetSiteSurvey() replies with strlen(msg) where msg can
+ * hold MAX_LEN_OF_BSS_TABLE(256) * LINE_LEN + 100 bytes, so 8 KB is too small.
+ */
+#if defined(USE_MT7915_AP)
+#define MAC_TABLE_DATA_SIZE	(sizeof(RT_802_11_MAC_TABLE))
+#define MAC_TABLE_DATA_STATIC	static
+#define SSURV_DATA_SIZE		(32 * 1024)
+#define SSURV_DATA_STATIC	static
+#else
+#define MAC_TABLE_DATA_SIZE	4096
+#define MAC_TABLE_DATA_STATIC
+#define SSURV_DATA_SIZE		8192
+#define SSURV_DATA_STATIC
+#endif
+
 int
 wl_ioctl(const char *ifname, int cmd, struct iwreq *pwrq)
 {
@@ -885,6 +918,18 @@ get_apcli_peer_connected(const char *ifname, struct iwreq *p_wrq)
 int
 get_apcli_wds_entry(const char *ifname, RT_802_11_MAC_ENTRY *pme)
 {
+#if defined(USE_MT7915_AP)
+	/*
+	 * zx17 -- The driver replies with the whole RT_802_11_MAC_TABLE (>=21768 B)
+	 * and ignores the length we send, so it would smash the one-entry buffer
+	 * the caller handed us.  Its reply length is sizeof(RT_802_11_MAC_TABLE)
+	 * and can never equal sizeof(RT_802_11_MAC_ENTRY), so the check below
+	 * could not pass anyway -- keep the same "no entry" answer, minus the
+	 * stack overflow.
+	 */
+	bzero(pme, sizeof(RT_802_11_MAC_ENTRY));
+	return 0;
+#else
 	struct iwreq wrq;
 
 	bzero(pme, sizeof(RT_802_11_MAC_ENTRY));
@@ -898,6 +943,7 @@ get_apcli_wds_entry(const char *ifname, RT_802_11_MAC_ENTRY *pme)
 	}
 
 	return 0;
+#endif
 }
 
 int
@@ -905,7 +951,7 @@ is_mac_in_sta_list(const unsigned char* p_mac)
 {
 	int i;
 	struct iwreq wrq;
-	char mac_table_data[4096];
+	MAC_TABLE_DATA_STATIC char mac_table_data[MAC_TABLE_DATA_SIZE];
 
 #if BOARD_HAS_5G_RADIO
 	/* query wl for authenticated sta list */
@@ -1160,7 +1206,7 @@ print_sta_list_inic(webs_t wp, RT_802_11_MAC_TABLE_INIC* mp, int num_ss_rx, int 
 static int
 print_mac_table_inic(webs_t wp, const char *wif_name, int num_ss_rx, int is_guest_on)
 {
-	char mac_table_data[4096];
+	MAC_TABLE_DATA_STATIC char mac_table_data[MAC_TABLE_DATA_SIZE];
 	struct iwreq wrq;
 	RT_802_11_MAC_TABLE_INIC *mp;
 	int ret = 0;
@@ -1272,7 +1318,7 @@ print_wmode(webs_t wp, unsigned int wmode, unsigned int phy_mode)
 static int
 print_mac_table(webs_t wp, const char *wif_name, int num_ss_rx, int is_guest_on)
 {
-	char mac_table_data[4096];
+	MAC_TABLE_DATA_STATIC char mac_table_data[MAC_TABLE_DATA_SIZE];
 	struct iwreq wrq;
 	RT_802_11_MAC_TABLE *mp;
 	int ret = 0;
@@ -1451,7 +1497,13 @@ print_radio_status(webs_t wp, int is_aband)
 				phy_mode = wrq2.u.mode;
 		}
 	} else {
-		memcpy(&wmode, wrq2.u.data.pointer, wrq2.u.data.length);
+		{
+			/* zx17: never trust a vendor reply length for a 4-byte target */
+			unsigned int _len = wrq2.u.data.length;
+			if (_len > sizeof(wmode))
+				_len = sizeof(wmode);
+			memcpy(&wmode, wrq2.u.data.pointer, _len);
+		}
 	}
 
 	freq = iw_freq2float(&(wrq1.u.freq));
@@ -1554,7 +1606,7 @@ ej_wl_auth_list(int eid, webs_t wp, int argc, char **argv)
 {
 	struct iwreq wrq;
 	int i, firstRow = 1, ret = 0;
-	char mac_table_data[4096];
+	MAC_TABLE_DATA_STATIC char mac_table_data[MAC_TABLE_DATA_SIZE];
 	char mac[18];
 	int num_ss_rx;
 
@@ -1653,7 +1705,7 @@ ej_wl_scan_5g(int eid, webs_t wp, int argc, char **argv)
 {
 	int retval = 0;
 	int apCount = 0;
-	char data[8192];
+	SSURV_DATA_STATIC char data[SSURV_DATA_SIZE];
 	char ssid_str[128];
 #if defined (USE_WSC_WPS)
 	char site_line[SSURV_LINE_LEN_WPS+1];
@@ -1770,7 +1822,7 @@ int
 ej_wl_scan_2g(int eid, webs_t wp, int argc, char **argv)
 {
 	int retval = 0, apCount = 0;
-	char data[8192];
+	SSURV_DATA_STATIC char data[SSURV_DATA_SIZE];
 	char ssid_str[128];
 #if (defined (USE_WSC_WPS) || defined(USE_RT3352_MII))
 	char site_line[SSURV_LINE_LEN_WPS+1];

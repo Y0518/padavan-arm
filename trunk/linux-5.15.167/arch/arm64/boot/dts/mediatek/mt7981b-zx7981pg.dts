@@ -164,6 +164,38 @@
 			gpios = <&pio 6 GPIO_ACTIVE_LOW>;
 		};
 	};
+	/*
+	 * MTK closed-source mt_wifi entry point.
+	 *
+	 * On MT7981 the driver is NOT bound by the DT directly: the built-in
+	 * wifi_utility/pci_mediatek_rbus.c matches this node, reads chip_id /
+	 * vend_id, fabricates a PCI config space (rbus_conf_space) whose
+	 * vendor/device id become 0x14c3/0x7981, and then pci_scan_root_bus()
+	 * invents a synthetic PCI device carrying the WMAC BAR + IRQ.  Only
+	 * that synthetic device is probed by mt_wifi.ko's pci_driver
+	 * (mt_rbus_tbl, PCI_DEVICE(0x14c3, 0x7981)) - and creating ra0/rax0
+	 * happens inside that probe.
+	 *
+	 * Without this node of_find_compatible_node(..., "mediatek,wbsys")
+	 * returns NULL, rbus_probe() bails immediately with -ENODEV, no PCI
+	 * device ever appears, and mt_wifi.ko loads silently without creating
+	 * any interface (nothing in dmesg, empty /sys/bus/pci/devices).
+	 *
+	 * Values taken from the MTK SDK DTS that ships with the closed driver:
+	 *   immortalwrt-mt798x-6.6/target/linux/mediatek/files-6.6/
+	 *       arch/arm64/boot/dts/mediatek/mt7981.dtsi
+	 *
+	 * chip_id is mandatory - it becomes the synthetic PCI device id.
+	 */
+	wbsys: wbsys@18000000 {
+		compatible = "mediatek,wbsys";
+		reg = <0 0x18000000 0 0x1000000>;
+		interrupts = <GIC_SPI 213 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 214 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 215 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 216 IRQ_TYPE_LEVEL_HIGH>;
+		chip_id = <0x7981>;
+	};
 };
 
 &uart0 {
@@ -351,4 +383,19 @@
 &wifi {
 	mediatek,mtd-eeprom = <&factory 0x0>;
 	status = "okay";
+};
+
+/*
+ * conninfra needs these two clocks.  Without clocks/clock-names its probe
+ * cannot clk_prepare_enable() them ("mcu clock not found" / "ap2conn clock not
+ * found"), the WMAC MCU never gets a clock and mt_wifi's later
+ * conninfra_pwr_on(CONNDRV_TYPE_WIFI) waits 20 s for an MCU handshake that can
+ * never happen --> "opId(0) completion timeout", pwr_on fails and the WMAC never
+ * comes up.  Same property pair as MTK's own mt7981.dtsi consys node (and as the
+ * mt76 wifi node in this tree).
+ */
+&consys {
+	clocks = <&topckgen CLK_TOP_NETSYS_MCU_SEL>,
+		 <&topckgen CLK_TOP_AP2CNN_HOST_SEL>;
+	clock-names = "mcu", "ap2conn";
 };

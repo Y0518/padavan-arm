@@ -2254,9 +2254,9 @@ ej_firmware_caps_hook(int eid, webs_t wp, int argc, char **argv)
 	int has_ipv6 = 0;
 #endif
 
-#if defined(USE_HW_NAT)
+#if defined(USE_HW_NAT) || defined(USE_HW_NAT_PPE)
 	int has_ipv4_ppe = 1;
-#if defined(USE_IPV6_HW_NAT)
+#if defined(USE_IPV6_HW_NAT) || defined(USE_HW_NAT_PPE)
 #if defined(USE_HW_NAT_V2)
 	int has_ipv6_ppe = 2;
 #else
@@ -2348,6 +2348,12 @@ ej_firmware_caps_hook(int eid, webs_t wp, int argc, char **argv)
 	int has_5g_mumimo = 1;
 	int has_5g_txbf = 1;
 #if USE_WID_5G==7981
+	int has_5g_160mhz = 1;
+#elif defined (BOARD_ZX7981PG)
+	/* MT7981B: 5G radio is 11ax and supports 160 MHz.  The DBDC branches
+	   below are MT7615/MT7915 add-in cards, where the shared radio caps 5G
+	   at 80 MHz -- that does not apply here.  (USE_WID_5G is 7915 on the
+	   mtk stack, so the ==7981 test above never matches this board.) */
 	int has_5g_160mhz = 1;
 #elif defined (BOARD_MT7615_DBDC) || defined (BOARD_MT7915_DBDC)
 	int has_5g_160mhz = 0;

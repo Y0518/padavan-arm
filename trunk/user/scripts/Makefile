@@ -24,6 +24,10 @@ endif
 	$(ROMFSINST) /etc_ro/shells
 	$(ROMFSINST) /etc_ro/mdev.conf
 	$(ROMFSINST) /etc_ro/banner
+	# MTK closed-source wifi profile (ZX7981PG / mtk stack only).
+	# This Makefile includes no config file, so gate on the directory:
+	# user/scripts/wireless/ only exists on the mtk branch.
+	[ ! -d wireless ] || $(ROMFSINST) /etc_ro/wireless
 	mkdir -p $(INSTALLDIR)/usr/share/terminfo
 	tar -xzf ./terminfo.tar.gz -C $(INSTALLDIR)/usr/share
 	$(ROMFSINST) /sbin/check_crontab.sh

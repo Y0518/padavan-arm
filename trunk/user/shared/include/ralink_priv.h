@@ -114,6 +114,46 @@ typedef union _MACHTTRANSMIT_SETTING {
 	unsigned short word;
 } MACHTTRANSMIT_SETTING, *PMACHTTRANSMIT_SETTING;
 
+#if defined(USE_MT7915_AP)
+/*
+ * zx17 -- MTK closed-source driver (mt_wifi 7.x) ioctl ABI.
+ *
+ * The driver answers RTPRIV_IOCTL_GET_MAC_TABLE_STRUCT with this exact layout
+ * (embedded/include/oid.h) and reports sizeof(RT_802_11_MAC_TABLE) as the
+ * reply length, so the fields below must not be reordered/resized:
+ *     UCHAR ApIdx; UCHAR Addr[6]; UINT16 Aid; UCHAR Psm; UCHAR MimoPs;
+ *     CHAR AvgRssi0..2; UINT32 ConnectedTime; USHORT TxRate;
+ *     UINT32 LastRxRate; SHORT StreamSnr[3]; SHORT SoundingRespSnr[3];
+ * -> 40 bytes (the Ralink layout used below is 28 and puts Aid at offset 7).
+ */
+typedef struct _RT_802_11_MAC_ENTRY {
+	unsigned char	ApIdx;
+	unsigned char	Addr[ETHER_ADDR_LEN];
+	unsigned short	Aid;
+	unsigned char	Psm;     // 0:PWR_ACTIVE, 1:PWR_SAVE
+	unsigned char	MimoPs;  // 0:MMPS_STATIC, 1:MMPS_DYNAMIC, 3:MMPS_Enabled
+	char		AvgRssi0;
+	char		AvgRssi1;
+	char		AvgRssi2;
+	unsigned int	ConnectedTime;
+	MACHTTRANSMIT_SETTING	TxRate;
+	unsigned int	LastRxRate;
+	short		StreamSnr[3];
+	short		SoundingRespSnr[3];
+} RT_802_11_MAC_ENTRY, *PRT_802_11_MAC_ENTRY;
+
+/*
+ * Worst case for MT7981/MT7986/MT7916 (SW_CONNECT_SUPPORT = 1030 entries);
+ * 544 without it, 288 with MEMORY_SHRINK_AGGRESS.  Sizing for the maximum
+ * makes sure the driver can never write past the buffer we hand it.
+ */
+#define MTK_MAX_LEN_OF_MAC_TABLE	1030
+
+typedef struct _RT_802_11_MAC_TABLE {
+	unsigned long Num;
+	RT_802_11_MAC_ENTRY Entry[MTK_MAX_LEN_OF_MAC_TABLE];
+} RT_802_11_MAC_TABLE, *PRT_802_11_MAC_TABLE;
+#else
 typedef struct _RT_802_11_MAC_ENTRY {
 	unsigned char	ApIdx;
 	unsigned char	Addr[ETHER_ADDR_LEN];
@@ -132,6 +172,7 @@ typedef struct _RT_802_11_MAC_TABLE {
 	unsigned long Num;
 	RT_802_11_MAC_ENTRY Entry[MAX_NUMBER_OF_MAC];
 } RT_802_11_MAC_TABLE, *PRT_802_11_MAC_TABLE;
+#endif
 
 /* RT3352 iNIC_mii MAC_TABLE */
 typedef union _MACHTTRANSMIT_SETTING_INIC {
@@ -234,7 +275,16 @@ typedef struct _PAIR_CHANNEL_FREQ_ENTRY
 #define MTD_PART_NAME_KERNEL	"kernel"
 #define MTD_PART_NAME_RWFS	"RWFS"
 
-#if defined (BOARD_360P2)
+#if defined (BOARD_ZX7981PG)
+/* MT7981B Factory (mtd2) layout, verified on hardware:
+ *   0x00  81 79                 chip id
+ *   0x04  00 0c 43 26 60 50     base MAC (6 bytes)
+ * The generic MT7981 / fallback values below point into an all-zero area
+ * of this SoC's eeprom, so rc.c read "0000" and every unit got the SSID
+ * suffix "_0000".  Last two MAC bytes therefore live at 0x08 (GMAC0+4). */
+#define OFFSET_MAC_GMAC0	0x0004
+#define OFFSET_MAC_GMAC2	0x0004
+#elif defined (BOARD_360P2)
 #define OFFSET_MAC_GMAC0	0xFFE8
 #define OFFSET_MAC_GMAC2	0xFFEE
 #elif defined (CONFIG_RALINK_MT7621)

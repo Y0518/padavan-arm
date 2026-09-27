@@ -1371,7 +1371,7 @@ gen_ralink_config(int is_soc_ap, int is_aband, int disable_autoscan)
 			i_VHTBW_MAX = 1;
 		//VHT_BW
 		i_val = nvram_wlan_get_int(is_aband, "HT_BW");
-#if (USE_WID_5G==7615 && !defined (BOARD_MT7615_DBDC)) || (USE_WID_5G==7915 && !defined (BOARD_MT7915_DBDC))
+#if (USE_WID_5G==7615 && !defined (BOARD_MT7615_DBDC)) || (USE_WID_5G==7915 && !defined (BOARD_MT7915_DBDC)) || defined (BOARD_ZX7981PG)
 		if (i_val == 3) //160Mhz
 			fprintf(fp, "VHT_BW=%d\n", 2);
 		else

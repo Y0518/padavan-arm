@@ -112,6 +112,35 @@
 #endif
 
 
+#if defined(USE_MT7915_AP)
+/*
+ * MTK closed-source stack (mt_wifi).  The driver creates the interfaces itself,
+ * named by l1profile.dat:
+ *     main_ifname=ra0;rax0   apcli_ifname=apcli;apclix   ext_ifname=ra;rax
+ * so band0 (= 2.4G) -> ra0 / ra1(guest) / apcli0 and band1 (= 5G) ->
+ * rax0 / rax1 / apclix0.  Verified on hardware.
+ *
+ * Note the driver IGNORES the band1 half of an "a;b" value unless
+ * CONFIG_MULTI_PROFILE_SUPPORT is enabled (rt_profile.c l1set_ifname()), so the
+ * profile cannot be used to rename the interfaces -- padavan has to follow the
+ * names the driver really creates.
+ *
+ * The DBDC branch above maps IFNAME_*_APCLI the other way round, so undo that too.
+ */
+#undef IFNAME_2G_MAIN
+#undef IFNAME_2G_GUEST
+#undef IFNAME_2G_APCLI
+#undef IFNAME_5G_MAIN
+#undef IFNAME_5G_GUEST
+#undef IFNAME_5G_APCLI
+
+#define IFNAME_2G_MAIN			"ra0"
+#define IFNAME_2G_GUEST			"ra1"
+#define IFNAME_2G_APCLI			"apcli0"
+#define IFNAME_5G_MAIN			"rax0"
+#define IFNAME_5G_GUEST			"rax1"
+#define IFNAME_5G_APCLI			"apclix0"
+#else
 #undef IFNAME_2G_MAIN
 #undef IFNAME_2G_GUEST
 #undef IFNAME_5G_MAIN
@@ -121,6 +150,7 @@
 #define IFNAME_2G_GUEST			"wlan0-1"
 #define IFNAME_5G_MAIN			"wlan1"
 #define IFNAME_5G_GUEST			"wlan1-1"
+#endif
 
 #if defined(USE_RT3352_MII)
 #define IFNAME_INIC_MAIN		IFNAME_2G_MAIN
