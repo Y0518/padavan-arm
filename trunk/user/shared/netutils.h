@@ -43,9 +43,42 @@
 #if defined (USE_SINGLE_MAC)
 #define IFNAME_LAN			"eth1.1"
 #define IFNAME_WAN			"eth1.2"
+#elif defined (BOARD_ZX7981PG)
+/*
+ * MT7981 + MT7531 走 DSA：switch 的每个 port 是独立的 netdev，名字由 DTS 的
+ * label 决定（lan2 / lan3 / wan），不是 eth0 / eth1。padavan 的默认 IFNAME_WAN
+ * 是 "eth1"，于是 rc.c 每次开机把 wan0_ifname 写成 eth1、接口从未被 up，
+ * WebUI 也就永远显示 WAN 未连接（switch_none.c 去读 /sys/class/net/eth1/speed）。
+ *
+ * 注意只改 WAN：net_lan.c 给 br0 加成员用的是 IFNAME_LAN1..LAN4 和 IFNAME_MAC2，
+ * 若把 IFNAME_MAC2 一起改成 "wan"，WAN 口会被误加进 LAN 桥。
+ */
+#define IFNAME_LAN			IFNAME_MAC
+#define IFNAME_WAN			"wan"
 #else
 #define IFNAME_LAN			IFNAME_MAC
 #define IFNAME_WAN			IFNAME_MAC2
+#endif
+
+/*
+ * IFNAME_WAN_PORT —— 「WAN 物理口」的 netdev 名（WAN CPU 口）。
+ *
+ * 非单 MAC 机型历史上就用 IFNAME_MAC2(eth1) 当 WAN CPU 口；ZX7981PG 走 DSA，
+ * WAN 口 netdev 由 DTS 的 label 决定、叫 "wan"（没有 eth1）。
+ *
+ * net_wan.c / web_ex.c 里凡「WAN 物理口」语义（做 VLAN 子接口、设 MAC/MTU/up、
+ * 写 wan0_ifname、取 WAN 网速统计）都必须用它。否则 boot 时 wan0_ifname 会被写成
+ * eth1（不存在的口）⇒ WAN 从未 up；且 net_wan.c 的 wan_down 会因为
+ * man_ifname(eth1) != IFNAME_WAN(wan) 主动把 wan 口 down 掉。
+ *
+ * 注意：net_lan.c 里给 br0 加成员的 IFNAME_MAC2 是 LAN 语义，不要改。
+ */
+#if defined (USE_SINGLE_MAC)
+#define IFNAME_WAN_PORT			IFNAME_MAC
+#elif defined (BOARD_ZX7981PG)
+#define IFNAME_WAN_PORT			"wan"
+#else
+#define IFNAME_WAN_PORT			IFNAME_MAC2
 #endif
 
 //#if defined(BOARD_RAX3000M)||defined(MT7981)

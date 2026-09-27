@@ -31,7 +31,7 @@ romfs: all
 	$(ROMFSINST) quectel_cm/quectel-CM /usr/bin/quectel-CM
 	$(ROMFSINST) modem_scan/modem_scand /usr/bin/modem_scand
 	$(ROMFSINST) modem_scan/modem_scanc /usr/bin/modem_scanc
-	$(ROMFSINST) files/qmodem /usr/sbin/qmodem
+	$(ROMFSINST) -p 0755 files/qmodem /usr/sbin/qmodem
 	mkdir -p $(INSTALLDIR)/usr/share/qmodem
 	$(ROMFSINST) apns.json /usr/share/qmodem/apns.json
 

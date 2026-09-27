@@ -49,10 +49,11 @@
 		 * has no such variable.  Empty command line => no root device
 		 * => "Kernel panic - not syncing: VFS: Unable to mount root fs".
 		 *
-		 * ubi.mtd=ubi2 : the 56 MiB UBI container U-Boot boots from
-		 *   ("woem" selects slot B).  Without it ubi_auto_attach() would
-		 *   attach the partition named "ubi" instead, i.e. slot A, which
-		 *   still holds the stock firmware.
+		 * ubi.mtd=ubi : the single 114 MiB UBI container created by the
+		 *   new U-Boot.  The vendor "woem" dual-slot layout -- and with it
+		 *   the old "ubi"/"ubi2" partition pair -- is gone, so there is no
+		 *   slot A/B anymore; without this argument ubi is never attached
+		 *   and the kernel cannot find its rootfs.
 		 *
 		 * No root= / ubi.block= needed: ubiblock_create_auto_rootfs()
 		 *   (drivers/mtd/ubi/block.c, gated by CONFIG_MTD_ROOTFS_ROOT_DEV=y)
@@ -60,7 +61,7 @@
 		 *   rootfs volume contains a squashfs, magic "hsqs", verified on
 		 *   the device - and ubiblock_create() then sets ROOT_DEV for it.
 		 */
-		bootargs = "console=ttyS0,115200n1 loglevel=8 ubi.mtd=ubi2 rootfstype=squashfs rootwait";
+		bootargs = "console=ttyS0,115200n1 loglevel=8 ubi.mtd=ubi rootfstype=squashfs rootwait";
 	};
 
 	gpio-keys {
@@ -334,30 +335,8 @@
 			};
 
 			partition@580000 {
-				label = "woem";
-				reg = <0x0580000 0x0A0000>;
-				read-only;
-			};
-
-			partition@620000 {
 				label = "ubi";
-				reg = <0x0620000 0x3800000>;
-			};
-
-			partition@3e20000 {
-				label = "ubi2";
-				reg = <0x3E20000 0x3800000>;
-			};
-
-			partition@7620000 {
-				label = "wtinfo";
-				reg = <0x7620000 0x60000>;
-				read-only;
-			};
-
-			partition@7680000 {
-				label = "nvram";
-				reg = <0x7680000 0x60000>;
+				reg = <0x580000 0x7200000>;
 			};
 		};
 	};

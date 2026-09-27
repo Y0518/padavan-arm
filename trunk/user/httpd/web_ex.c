@@ -1632,7 +1632,7 @@ wanlink_hook(int eid, webs_t wp, int argc, char **argv)
 				
 				if (wan_ifstate > 0 && (wisp ||
 #if !defined (USE_SINGLE_MAC)
-								strcmp(man_ifname, IFNAME_MAC2) == 0 ||
+								strcmp(man_ifname, IFNAME_WAN_PORT) == 0 ||
 #endif
 								nvram_get_int("hw_nat_mode") == 0
 							)

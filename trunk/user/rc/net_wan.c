@@ -492,8 +492,8 @@ config_soft_bridges_other(int vinet_vid, int viptv_vid, int pvid_wan, const char
 	for (i = 0; i < 4; i++) {
 		if (port_vid[i] < 2)
 			continue;
-		snprintf(port_ifname, sizeof(port_ifname), "%s.%d", IFNAME_MAC2, port_vid[i]);
-		create_vlan_iface(IFNAME_MAC2, port_vid[i], port_pri[i], 1500, wan_hwaddr, 1);
+		snprintf(port_ifname, sizeof(port_ifname), "%s.%d", IFNAME_WAN_PORT, port_vid[i]);
+		create_vlan_iface(IFNAME_WAN_PORT, port_vid[i], port_pri[i], 1500, wan_hwaddr, 1);
 		config_soft_bridge_wan(br_id, port_vid[i], port_pri[i], port_ifname, wan_hwaddr);
 		br_id++;
 	}
@@ -510,7 +510,7 @@ config_vinet_wan(void)
 #if defined (USE_SINGLE_MAC)
 	const char *ifname_wan_cpu = IFNAME_MAC;
 #else
-	const char *ifname_wan_cpu = IFNAME_MAC2;
+	const char *ifname_wan_cpu = IFNAME_WAN_PORT;
 #endif
 #if defined (USE_GMAC2_TO_GPHY) || defined (USE_GMAC2_TO_GSW)
 	int bridge_mode = get_wan_bridge_mode();
@@ -556,14 +556,14 @@ config_vinet_wan(void)
 #endif
 	{
 		is_vlan_ifname = 0;
-		snprintf(vinet_ifname, sizeof(vinet_ifname), "%s", IFNAME_MAC2);
+		snprintf(vinet_ifname, sizeof(vinet_ifname), "%s", IFNAME_WAN_PORT);
 	}
 
 	/* always prepare eth3 interface */
-	ifconfig(IFNAME_MAC2, 0, NULL, NULL);
-	set_interface_hwaddr(IFNAME_MAC2, wan_hwaddr);
-	set_interface_mtu(IFNAME_MAC2, 1500);
-	ifconfig(IFNAME_MAC2, IFUP, "0.0.0.0", NULL);
+	ifconfig(IFNAME_WAN_PORT, 0, NULL, NULL);
+	set_interface_hwaddr(IFNAME_WAN_PORT, wan_hwaddr);
+	set_interface_mtu(IFNAME_WAN_PORT, 1500);
+	ifconfig(IFNAME_WAN_PORT, IFUP, "0.0.0.0", NULL);
 #endif
 
 	/* remove previous VLAN interface */
@@ -646,7 +646,7 @@ launch_viptv_wan(void)
 #if defined (USE_SINGLE_MAC)
 	const char *ifname_wan_cpu = IFNAME_MAC;
 #else
-	const char *ifname_wan_cpu = IFNAME_MAC2;
+	const char *ifname_wan_cpu = IFNAME_WAN_PORT;
 #endif
 
 	is_vlan_filter = (nvram_match("vlan_filter", "1")) ? 1 : 0;
