@@ -27,7 +27,6 @@ at_send() {
 case "$1" in
 scan)
 	mkdir -p "$RUN"
-	mkdir -p "$RUN"
 	# load usb modem drivers (built as modules)
 	for m in usbserial usb_wwan option qcserial cdc-acm cdc-wdm cdc_ether cdc_ncm cdc_mbim qmi_wwan rndis_host; do modprobe $m 2>/dev/null; done
 	found=""

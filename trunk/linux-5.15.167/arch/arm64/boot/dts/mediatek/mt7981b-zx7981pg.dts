@@ -89,51 +89,74 @@
 	gpio-leds {
 		compatible = "gpio-leds";
 
-		led-5g-blue {
-			label = "lede:blue:5gblue";
-			gpios = <&pio 12 GPIO_ACTIVE_HIGH>;
-			default-state = "off";
-		};
-
-		led-5g-yellow {
-			label = "lede:blue:5gyellow";
-			gpios = <&pio 11 GPIO_ACTIVE_HIGH>;
-			default-state = "off";
+		/*
+		 * IMPORTANT: the labels below must be the EXACT names padavan probes for.
+		 * rc/gpio_pins.c writes /sys/devices/platform/gpio-leds/leds/<label>/ and
+		 * shared/gpioutils.c search_gpio_led() does a strcmp() against
+		 * "power"/"blue:status", "wifi", "sw2g", "sw5g", "wan"/"green:status",
+		 * "lan", "usb", "usb2", "router".  A label such as "lede:blue:wifi"
+		 * matches none of them, so the whole front panel stays dead.
+		 *
+		 * The GPIO numbers come from the vendor device tree of this board,
+		 * immortalwrt: target/linux/mediatek/dts/mt7981b-wirelesstag-zx7981pg.dts
+		 * (the same mapping is used by the zx7981pd variant).
+		 */
+		led-power {
+			label = "power";
+			gpios = <&pio 5 GPIO_ACTIVE_HIGH>;
+			default-state = "on";
 		};
 
 		led-wifi {
-			label = "lede:blue:wifi";
-			gpios = <&pio 9 GPIO_ACTIVE_HIGH>;
-			default-state = "off";
-		};
-
-		led-4g-blue {
-			label = "lede:blue:4gblue";
-			gpios = <&pio 10 GPIO_ACTIVE_HIGH>;
-			default-state = "off";
-		};
-
-		led-4g-yellow {
-			label = "lede:blue:4gyellow";
-			gpios = <&pio 13 GPIO_ACTIVE_HIGH>;
-			default-state = "off";
-		};
-
-		led-lan2 {
-			label = "lede:blue:lan2";
-			gpios = <&pio 4 GPIO_ACTIVE_LOW>;
-			default-state = "off";
-		};
-
-		led-lan3 {
-			label = "lede:blue:lan3";
-			gpios = <&pio 22 GPIO_ACTIVE_LOW>;
+			label = "wifi";
+			gpios = <&pio 4 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
 
 		led-wan {
-			label = "lede:blue:wan";
+			label = "wan";
 			gpios = <&pio 8 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+
+		led-lan {
+			label = "lan";
+			gpios = <&pio 22 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+
+		/*
+		 * Modem signal LEDs (4G/5G).  padavan has no slot for these, so they are
+		 * deliberately given vendor names that it ignores - a future qmodem
+		 * script can drive them through /sys/class/leds/<label>/brightness.
+		 */
+		led-4g-green {
+			label = "wt:4g:green";
+			gpios = <&pio 11 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		led-4g-blue {
+			label = "wt:4g:blue";
+			gpios = <&pio 12 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		led-4g-yellow {
+			label = "wt:4g:yellow";
+			gpios = <&pio 10 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		led-5g-blue {
+			label = "wt:5g:blue";
+			gpios = <&pio 9 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		led-5g-yellow {
+			label = "wt:5g:yellow";
+			gpios = <&pio 13 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
 	};
