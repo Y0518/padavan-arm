@@ -770,6 +770,7 @@ struct nvram_pair router_defaults[] = {
 	{ "qmodem_enable", "1" },
 	{ "qmodem_apn", "" },
 	{ "qmodem_at_port", "" },
+	{ "qmodem_poll", "15" },
 #endif
 	{ "sw_nat_mode", "0" },
 #if defined(USE_SFE)

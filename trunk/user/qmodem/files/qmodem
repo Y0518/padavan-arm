@@ -1,41 +1,111 @@
 #!/bin/sh
-# qmodem - padavan skeleton port of QModem (https://github.com/FUjr/QModem)
-# Scan / AT / status / dial for USB cellular modems (QMI/ECM/RNDIS via quectel-CM).
-# Full feature port (SMS UI, band locking, multi-modem) is a later iteration.
+# qmodem - padavan port of QModem (https://github.com/FUjr/QModem)
+#
+# Commands:
+#   scan                       detect the modem AT port
+#   status                     raw SIM / signal / registration / cell dump (console)
+#   netinfo                    machine readable network info, one KEY=VALUE per line
+#   dial | stop                start / stop quectel-CM using the nvram APN
+#   at <cmd>                   send a raw AT command on the detected port
+#   monitor start|stop|status  keep /tmp/run/qmodem/status.kv fresh for the WebUI
+#
+# The WebUI never does AT I/O itself: the httpd hook "qmodem_netinfo" just dumps
+# status.kv (fast, side effect free), and "monitor loop" (below) refreshes it.
 
 RUN=/tmp/run/qmodem
+KV="$RUN/status.kv"
+AT_PORT_FILE="$RUN/at_port"
+MON_PID="$RUN/monitor.pid"
+CM_PID="$RUN/cm.pid"
+CM_LOG="$RUN/cm.log"
+DATA_IFS="usb0 wwan0 eth2 usb1"
+SMS_TOOL="$(command -v sms_tool_q 2>/dev/null || echo /usr/bin/sms_tool_q)"
+CM_BIN="$(command -v quectel-CM 2>/dev/null || echo /usr/bin/quectel-CM)"
+DEF_POLL=15
 
 usage() {
-	echo "usage: qmodem scan|status|dial|stop|at <cmd>"
-	echo "  scan   - detect AT port on /dev/ttyUSB* and identify the modem"
-	echo "  status - SIM / signal / registration / serving cell"
-	echo "  dial   - start quectel-CM with nvram qmodem_apn"
-	echo "  stop   - stop quectel-CM"
-	echo "  at ... - send a raw AT command on the detected port"
+	echo "usage: qmodem scan|status|netinfo|dial|stop|at <cmd>|monitor start|stop|status"
+	echo "  scan    - detect AT port on /dev/ttyUSB* and identify the modem"
+	echo "  status  - raw SIM / signal / registration / serving cell dump"
+	echo "  netinfo - KEY=VALUE network info (used by the WebUI)"
+	echo "  dial    - start quectel-CM with nvram qmodem_apn"
+	echo "  stop    - stop quectel-CM"
+	echo "  at ...  - send a raw AT command on the detected port"
+	echo "  monitor - start/stop/status the background status collector"
+}
+
+kv() { printf '%s=%s\n' "$1" "$2"; }
+
+# ---------------------------------------------------------------- AT plumbing
+
+at_send() {			# $1=port $2=command
+	if [ ! -x "$SMS_TOOL" ]; then
+		return 1
+	fi
+	if command -v timeout >/dev/null 2>&1; then
+		timeout 4 "$SMS_TOOL" -d "$1" at "$2" 2>/dev/null
+	else
+		"$SMS_TOOL" -d "$1" at "$2" 2>/dev/null
+	fi
+}
+
+at_line() {			# $1=port $2=command $3=sed address (basic regexp)
+	at_send "$1" "$2" | tr -d '\r' | sed -n "/$3/p" | head -n 1
+}
+
+at_val() {			# $1=port $2=command $3=sed script (prints the value)
+	at_send "$1" "$2" | tr -d '\r' | sed -n "$3" | head -n 1
+}
+
+poll_interval() {
+	p=$(nvram get qmodem_poll 2>/dev/null)
+	case "$p" in
+		''|*[!0-9]*) p=$DEF_POLL ;;
+	esac
+	[ "$p" -ge 3 ] 2>/dev/null || p=$DEF_POLL
+	echo "$p"
+}
+
+monitor_running() {
+	[ -f "$MON_PID" ] || return 1
+	kill -0 "$(cat "$MON_PID" 2>/dev/null)" 2>/dev/null
 }
 
 at_port() {
-	if [ -f "$RUN/at_port" ]; then cat "$RUN/at_port"; return 0; fi
-	qmodem scan >/dev/null 2>&1 && cat "$RUN/at_port" 2>/dev/null
+	if [ -f "$AT_PORT_FILE" ] && [ -c "$(cat "$AT_PORT_FILE" 2>/dev/null)" ]; then
+		cat "$AT_PORT_FILE"
+		return 0
+	fi
+	p=$(nvram get qmodem_at_port 2>/dev/null)
+	if [ -n "$p" ] && [ -c "$p" ]; then
+		mkdir -p "$RUN"
+		echo "$p" > "$AT_PORT_FILE"
+		echo "$p"
+		return 0
+	fi
+	cmd_scan >/dev/null 2>&1
+	if [ -f "$AT_PORT_FILE" ]; then
+		cat "$AT_PORT_FILE"
+		return 0
+	fi
+	return 1
 }
 
-at_send() {
-	# $1 = port, $2 = command
-	sms_tool_q -d "$1" at "$2" 2>/dev/null
-}
+# ------------------------------------------------------------------- commands
 
-case "$1" in
-scan)
+cmd_scan() {
 	mkdir -p "$RUN"
 	# load usb modem drivers (built as modules)
-	for m in usbserial usb_wwan option qcserial cdc-acm cdc-wdm cdc_ether cdc_ncm cdc_mbim qmi_wwan rndis_host; do modprobe $m 2>/dev/null; done
+	for m in usbserial usb_wwan option qcserial cdc-acm cdc-wdm cdc_ether cdc_ncm cdc_mbim qmi_wwan rndis_host; do
+		modprobe "$m" 2>/dev/null
+	done
 	found=""
 	for dev in /dev/ttyUSB0 /dev/ttyUSB1 /dev/ttyUSB2 /dev/ttyUSB3 /dev/ttyUSB4; do
 		[ -e "$dev" ] || continue
-		resp=$(sms_tool_q -d "$dev" at "ATI" 2>/dev/null)
+		resp=$(at_send "$dev" "ATI")
 		case "$resp" in
-		*Quectel*|*SIMCOM*|*Fibocom*|*MEIGLink*|*Manufacturer*)
-			echo "$dev" > "$RUN/at_port"
+		*Quectel*|*SIMCOM*|*SIMCom*|*Fibocom*|*MEIG*|*MEIGLink*|*Manufacturer*|*Revision*)
+			echo "$dev" > "$AT_PORT_FILE"
 			found="$dev"
 			echo "AT port: $dev"
 			echo "$resp"
@@ -43,43 +113,261 @@ scan)
 			;;
 		esac
 	done
-	[ -n "$found" ] || { echo "no modem AT port found"; exit 1; }
-	;;
-status)
-	port=$(at_port) || exit 1
+	if [ -z "$found" ]; then
+		rm -f "$AT_PORT_FILE"
+		echo "no modem AT port found"
+		return 1
+	fi
+	return 0
+}
+
+cmd_status() {
+	port=$(at_port) || { echo "no modem AT port found"; return 1; }
 	echo "AT port: $port"
-	for c in "AT+CPIN?" "AT+CSQ" "AT+COPS?" "AT+CGREG?" 'AT+QENG="servingcell"'; do
+	for c in "ATI" "AT+CPIN?" "AT+CSQ" "AT+COPS?" "AT+CREG?" "AT+CGREG?" 'AT+QENG="servingcell"'; do
 		echo "--- $c"
 		at_send "$port" "$c"
 	done
-	;;
-dial)
+	return 0
+}
+
+# human readable link mode out of the COPS AcT field
+act_name() {
+	case "$1" in
+		0) echo "GSM" ;;
+		2) echo "WCDMA" ;;
+		3) echo "GPRS" ;;
+		4|5|6) echo "HSPA" ;;
+		7) echo "LTE" ;;
+		8) echo "EC-GSM" ;;
+		9) echo "LTE-A" ;;
+		10) echo "LTE-A Pro" ;;
+		11) echo "NR5G" ;;
+		12) echo "NR5G-NSA" ;;
+		'') echo "" ;;
+		*) echo "AcT$1" ;;
+	esac
+}
+
+reg_name() {
+	case "$1" in
+		0) echo "not registered" ;;
+		1) echo "registered" ;;
+		2) echo "searching" ;;
+		3) echo "denied" ;;
+		4) echo "unknown" ;;
+		5) echo "roaming" ;;
+		'') echo "" ;;
+		*) echo "stat$1" ;;
+	esac
+}
+
+cmd_netinfo() {
+	mkdir -p "$RUN"
+
+	kv ts "$(date +%s)"
+	kv poll "$(poll_interval)"
+	if monitor_running; then kv monitor on; else kv monitor off; fi
+
+	if [ ! -x "$SMS_TOOL" ]; then
+		kv state "no_tool"
+		kv end 1
+		return 0
+	fi
+
+	port=$(at_port)
+	if [ -z "$port" ]; then
+		kv state "no_modem"
+		kv dial "$(dial_state)"
+		kv end 1
+		return 0
+	fi
+	kv at_port "$port"
+
+	# --- identity -----------------------------------------------------------
+	# AT+CGMM gives the bare model; fall back to ATI (2nd non-empty line is the
+	# model on most modems, the 1st is the vendor).
+	model=$(at_val "$port" "AT+CGMM" 's/^\([^+].*\)$/\1/p')
+	[ -n "$model" ] || model=$(at_send "$port" "ATI" | tr -d '\r' | grep -v '^$' | sed -n '2p')
+	kv model "$model"
+
+	# --- SIM ----------------------------------------------------------------
+	sim=$(at_val "$port" "AT+CPIN?" 's/^+CPIN: *//p')
+	[ -n "$sim" ] || sim="UNKNOWN"
+	kv sim "$sim"
+
+	# --- signal (CSQ -> dBm + percentage) -----------------------------------
+	csq=$(at_val "$port" "AT+CSQ" 's/^+CSQ: *\([0-9]*\).*/\1/p')
+	case "$csq" in
+		''|*[!0-9]*) csq="" ;;
+	esac
+	if [ -n "$csq" ] && [ "$csq" -le 31 ]; then
+		kv csq "$csq"
+		kv signal_dbm "$((-113 + 2 * csq))"
+		kv signal_pct "$(((csq * 100 + 15) / 31))"
+	else
+		kv csq ""
+		kv signal_dbm ""
+		kv signal_pct ""
+	fi
+
+	# --- operator / mode ----------------------------------------------------
+	cops=$(at_line "$port" "AT+COPS?" '^+COPS:')
+	op=$(printf '%s' "$cops" | sed -n 's/^+COPS: *[0-9]*,[0-9]*,"\([^"]*\)".*/\1/p')
+	act=$(printf '%s' "$cops" | sed -n 's/^+COPS: *[0-9]*,[0-9]*,"[^"]*",\([0-9]*\).*/\1/p')
+	kv operator "$op"
+	kv netmode "$(act_name "$act")"
+
+	# --- registration (prefer the packet-switched ones) ---------------------
+	reg=""
+	for c in "AT+CEREG?" "AT+CGREG?" "AT+CREG?"; do
+		reg=$(at_val "$port" "$c" 's/^+C[A-Z]*REG: *[0-9]*,\([0-9]*\).*/\1/p')
+		[ -n "$reg" ] && break
+	done
+	kv reg_stat "${reg:-}"
+	kv reg_text "$(reg_name "$reg")"
+
+	# --- serving cell (Quectel) --------------------------------------------
+	cell=$(at_line "$port" 'AT+QENG="servingcell"' '^+QENG:')
+	kv cell_raw "$(printf '%s' "$cell" | sed -n 's/^+QENG: *//p' | cut -c1-110)"
+
+	# --- data bearer --------------------------------------------------------
+	kv dial "$(dial_state)"
+	ifn=""; ip4=""
+	for d in $DATA_IFS; do
+		[ -d "/sys/class/net/$d" ] || continue
+		# busybox ip: keep to the plain "ip -4 addr show dev X" form and add
+		# fallbacks, because -o / -br support varies between builds.
+		a=$(ip -4 addr show dev "$d" 2>/dev/null | sed -n 's/.*inet \([0-9.]*\)\/.*/\1/p' | head -n 1)
+		[ -n "$a" ] || a=$(ip -4 -o addr show dev "$d" 2>/dev/null | sed -n 's/.*inet \([0-9.]*\)\/.*/\1/p' | head -n 1)
+		[ -n "$a" ] || a=$(ifconfig "$d" 2>/dev/null | sed -n 's/.*inet addr:\([0-9.]*\).*/\1/p' | head -n 1)
+		if [ -n "$a" ]; then ifn="$d"; ip4="$a"; break; fi
+	done
+	kv data_if "$ifn"
+	kv ip4 "$ip4"
+	if [ -n "$ifn" ]; then
+		kv rx_bytes "$(cat /sys/class/net/$ifn/statistics/rx_bytes 2>/dev/null)"
+		kv tx_bytes "$(cat /sys/class/net/$ifn/statistics/tx_bytes 2>/dev/null)"
+	else
+		kv rx_bytes ""
+		kv tx_bytes ""
+	fi
+
+	apn=$(nvram get qmodem_apn 2>/dev/null)
+	kv apn "$apn"
+
+	# --- verdict ------------------------------------------------------------
+	if [ "$sim" = "READY" ] || [ "$sim" = "SIM PIN" ]; then
+		kv state ok
+	else
+		kv state no_sim
+	fi
+	kv end 1
+	return 0
+}
+
+dial_state() {
+	if [ -f "$CM_PID" ] && kill -0 "$(cat "$CM_PID" 2>/dev/null)" 2>/dev/null; then
+		echo up
+	else
+		echo down
+	fi
+}
+
+cmd_dial() {
 	apn=$(nvram get qmodem_apn 2>/dev/null)
 	[ -n "$apn" ] || apn=cmnet
 	mkdir -p "$RUN"
-	port=$(at_port) || exit 1
-	if [ -f "$RUN/cm.pid" ] && kill -0 "$(cat "$RUN/cm.pid")" 2>/dev/null; then
-		echo "quectel-CM already running (pid $(cat "$RUN/cm.pid"))"
-		exit 0
+	at_port >/dev/null || { echo "no modem AT port found"; return 1; }
+	if [ "$(dial_state)" = "up" ]; then
+		echo "quectel-CM already running (pid $(cat "$CM_PID"))"
+		return 0
 	fi
 	echo "starting quectel-CM (apn=$apn) ..."
-	quectel-CM -s "$apn" > "$RUN/cm.log" 2>&1 &
-	echo $! > "$RUN/cm.pid"
-	echo "pid $(cat "$RUN/cm.pid"); log: $RUN/cm.log"
-	;;
-stop)
-	if [ -f "$RUN/cm.pid" ]; then
-		kill "$(cat "$RUN/cm.pid")" 2>/dev/null
-		rm -f "$RUN/cm.pid"
+	"$CM_BIN" -s "$apn" > "$CM_LOG" 2>&1 &
+	echo $! > "$CM_PID"
+	echo "pid $(cat "$CM_PID"); log: $CM_LOG"
+	return 0
+}
+
+cmd_stop() {
+	if [ -f "$CM_PID" ]; then
+		kill "$(cat "$CM_PID")" 2>/dev/null
+		rm -f "$CM_PID"
 		echo "stopped"
+	else
+		echo "not running"
 	fi
-	;;
-at)
-	shift
-	port=$(at_port) || exit 1
-	at_send "$port" "$*"
-	;;
-*)
-	usage
-	;;
+	return 0
+}
+
+# ------------------------------------------------------------------- monitor
+
+cmd_monitor() {
+	case "$1" in
+	start)
+		mkdir -p "$RUN"
+		if monitor_running; then
+			echo "monitor already running (pid $(cat "$MON_PID"))"
+			return 0
+		fi
+		if command -v start-stop-daemon >/dev/null 2>&1; then
+			start-stop-daemon -S -b -m -p "$MON_PID" -x /usr/sbin/qmodem -- monitor loop
+		else
+			( while :; do cmd_netinfo > /dev/null 2>&1; sleep "$(poll_interval)"; done ) >/dev/null 2>&1 &
+			echo $! > "$MON_PID"
+		fi
+		sleep 1
+		if monitor_running; then
+			echo "monitor started (pid $(cat "$MON_PID"), every $(poll_interval)s)"
+			return 0
+		fi
+		echo "monitor failed to start"
+		return 1
+		;;
+	stop)
+		if command -v start-stop-daemon >/dev/null 2>&1; then
+			start-stop-daemon -K -p "$MON_PID" 2>/dev/null
+		fi
+		if [ -f "$MON_PID" ]; then
+			kill "$(cat "$MON_PID")" 2>/dev/null
+			rm -f "$MON_PID"
+		fi
+		echo "monitor stopped"
+		return 0
+		;;
+	status)
+		if monitor_running; then
+			echo "running (pid $(cat "$MON_PID"))"
+		else
+			echo "stopped"
+		fi
+		return 0
+		;;
+	loop)
+		# internal: keep status.kv fresh.  A one shot refresh also happens at
+		# start so the WebUI has data immediately.
+		while :; do
+			cmd_netinfo > "$KV.tmp" 2>/dev/null && mv -f "$KV.tmp" "$KV"
+			sleep "$(poll_interval)"
+		done
+		;;
+	*)
+		usage
+		return 2
+		;;
+	esac
+}
+
+# ---------------------------------------------------------------------- main
+
+case "$1" in
+scan)		mkdir -p "$RUN"; cmd_scan ;;
+status)		mkdir -p "$RUN"; cmd_status ;;
+netinfo)	cmd_netinfo ;;
+dial)		mkdir -p "$RUN"; cmd_dial ;;
+stop)		cmd_stop ;;
+at)		shift; port=$(at_port) || { echo "no modem AT port found"; exit 1; }; at_send "$port" "$*" ;;
+monitor)	shift; cmd_monitor "$1" ;;
+*)		usage ;;
 esac

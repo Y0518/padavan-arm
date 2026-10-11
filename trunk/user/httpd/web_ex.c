@@ -3048,6 +3048,39 @@ static int ej_dump_syslog_hook(int eid, webs_t wp, int argc, char **argv)
 	return 0;
 }
 
+#ifdef CONFIG_FIRMWARE_INCLUDE_QMODEM /* zx-qmodem */
+/*
+ * Dump the status snapshot that "qmodem monitor" keeps fresh in
+ * /tmp/run/qmodem/status.kv (one KEY=VALUE per line).
+ *
+ * Deliberately side effect free and non blocking: doing the AT I/O here would
+ * stall the whole httpd, so the shell collector owns that job and this hook
+ * only reads a small file.
+ */
+static int ej_qmodem_netinfo_hook(int eid, webs_t wp, int argc, char **argv)
+{
+	FILE *fp;
+	char buf[MAX_FILE_LINE_SIZE];
+	int lines = 0;
+
+	fp = fopen("/tmp/run/qmodem/status.kv", "r");
+	if (fp) {
+		while (fgets(buf, sizeof(buf), fp) != NULL) {
+			fputs(buf, wp);
+			lines++;
+		}
+		fclose(fp);
+	}
+
+	if (!lines)
+		fputs("state=no_data\nend=1\n", wp);
+
+	fflush(wp);
+
+	return 0;
+}
+#endif /* CONFIG_FIRMWARE_INCLUDE_QMODEM */
+
 static int ej_dump_eth_mib_hook(int eid, webs_t wp, int argc, char **argv)
 {
 	int eth_port_id = 0;
@@ -4070,6 +4103,9 @@ struct ej_handler ej_handlers[] =
 	{ "hardware_pins", ej_hardware_pins_hook},
 	{ "detect_internet", ej_detect_internet_hook},
 	{ "dump_syslog", ej_dump_syslog_hook},
+	#ifdef CONFIG_FIRMWARE_INCLUDE_QMODEM /* zx-qmodem */
+	{ "qmodem_netinfo", ej_qmodem_netinfo_hook},
+	#endif
 	{ "dump_eth_mib", ej_dump_eth_mib_hook},
 	{ "get_usb_ports_info", ej_get_usb_ports_info},
 	{ "get_ext_ports_info", ej_get_ext_ports_info},

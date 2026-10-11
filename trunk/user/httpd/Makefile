@@ -63,3 +63,8 @@ romfs:
 ifeq ($(CONFIG_FIRMWARE_INCLUDE_HTTPS),y)
 	$(ROMFSINST) /usr/bin/https-cert.sh
 endif
+
+# zx-qmodem: let httpd/ web_ex.c see the qmodem build switch (same as user/shared)
+ifeq ($(CONFIG_FIRMWARE_INCLUDE_QMODEM),y)
+CFLAGS += -DCONFIG_FIRMWARE_INCLUDE_QMODEM
+endif

@@ -1,0 +1,1 @@
+<% qmodem_netinfo(); %>
