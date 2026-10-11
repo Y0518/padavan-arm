@@ -140,11 +140,12 @@ function refresh_netinfo(){
 			var pct = parseInt(d.signal_pct, 10);
 			if (isNaN(pct)) pct = 0;
 			qm_set('qm_signal', d.signal_dbm + ' dBm  (' + pct + '%)');
-			$j('#qm_signal_bar').css('width', pct + '%')
-				.attr('class', 'progress-bar' + (pct >= 60 ? ' progress-bar-success' : (pct >= 25 ? ' progress-bar-warning' : ' progress-bar-danger')));
+			$j('#qm_signal_bar').css('width', pct + '%');
+			$j('#qm_signal_wrap').attr('class', 'progress' + (pct >= 60 ? ' progress-success' : (pct >= 25 ? ' progress-warning' : ' progress-danger')));
 		} else {
 			qm_set('qm_signal', '-');
-			$j('#qm_signal_bar').css('width', '0%').attr('class', 'progress-bar');
+			$j('#qm_signal_bar').css('width', '0%');
+			$j('#qm_signal_wrap').attr('class', 'progress');
 		}
 
 		var t = parseInt(d.ts, 10);
@@ -242,8 +243,8 @@ function qm_monitor(action){
                                             <td style="color:#777;">信号强度</td>
                                             <td>
                                                 <span id="qm_signal">-</span>
-                                                <div class="progress" style="margin:4px 0 0 0; height:8px; width:80%;">
-                                                    <div id="qm_signal_bar" class="progress-bar" style="width:0%;"></div>
+                                                <div id="qm_signal_wrap" class="progress" style="margin:4px 0 0 0; height:8px; width:80%;">
+                                                    <div id="qm_signal_bar" class="bar" style="width:0%;"></div>
                                                 </div>
                                             </td>
                                             <td style="color:#777;">网络制式</td><td><span id="qm_netmode">-</span></td>
